@@ -1,0 +1,22 @@
+{
+  "name": "@triviatowers/game-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic, framework-free game rules shared by the web client and backend functions.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@triviatowers/shared-types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.0"
+  }
+}

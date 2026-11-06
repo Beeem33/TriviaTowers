@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "@fontsource-variable/fredoka";
+@import "@fontsource-variable/nunito";
+
+@theme {
+  --font-display: "Fredoka Variable", ui-rounded, "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Nunito Variable", ui-rounded, "Segoe UI", system-ui, sans-serif;
+  --color-ink: #1d2747;
+  --color-ink-soft: #4a5578;
+  --color-sun: #ff8a3d;
+  --color-sun-dark: #d9621a;
+  --color-grape: #7b6cf6;
+  --color-grape-dark: #5a4bd6;
+  --color-mint: #2ec4a6;
+  --color-mint-dark: #1c9b83;
+  --color-good: #1f9d5c;
+  --color-bad: #e23a55;
+  --color-sky-top: #79c4ff;
+}
+
+:root {
+  color-scheme: light;
+  --sky: linear-gradient(180deg, #6fbcff 0%, #a9dcff 38%, #d7ecff 62%, #ffe2ef 100%);
+}
+
+html,
+body {
+  background: #a9dcff;
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sky-bg {
+  background: var(--sky);
+}
+
+/* Component classes live in the components layer so utilities can override them. */
+@layer components {
+/* Chunky, tactile game buttons. */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-display text-lg font-semibold
+    transition-[transform,box-shadow,filter] duration-100 select-none
+    focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-ink
+    disabled:cursor-not-allowed disabled:opacity-60;
+  box-shadow: 0 5px 0 var(--btn-shadow, rgba(0, 0, 0, 0.18));
+}
+.btn:not(:disabled):hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 0 var(--btn-shadow, rgba(0, 0, 0, 0.18));
+}
+.btn:not(:disabled):active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--btn-shadow, rgba(0, 0, 0, 0.18));
+}
+.btn-sun {
+  @apply bg-sun text-white;
+  --btn-shadow: var(--color-sun-dark);
+}
+.btn-grape {
+  @apply bg-grape text-white;
+  --btn-shadow: var(--color-grape-dark);
+}
+.btn-mint {
+  @apply bg-mint text-white;
+  --btn-shadow: var(--color-mint-dark);
+}
+.btn-ghost {
+  @apply bg-white text-ink;
+  --btn-shadow: #c9d4ea;
+}
+
+.card {
+  @apply rounded-3xl bg-white/85 shadow-[0_10px_40px_-12px_rgba(29,39,71,0.35)] backdrop-blur-md;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold;
+}
+}
+
+/* Animations (all disabled under reduced motion below). */
+@keyframes tt-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes tt-rise {
+  0% { transform: translateY(12px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes tt-float-up {
+  0% { transform: translate(-50%, 10px) scale(0.7); opacity: 0; }
+  15% { transform: translate(-50%, 0) scale(1.1); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translate(-50%, -60px) scale(1); opacity: 0; }
+}
+@keyframes tt-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+@keyframes tt-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes tt-wobble-2d {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-3deg); }
+  50% { transform: rotate(2.5deg); }
+  75% { transform: rotate(-1.5deg); }
+}
+.tt-pop { animation: tt-pop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.tt-rise { animation: tt-rise 0.35s ease-out both; }
+.tt-float-up { animation: tt-float-up 1.6s ease-out both; }
+.tt-shake { animation: tt-shake 0.45s ease-in-out; }
+.tt-bob { animation: tt-bob 3s ease-in-out infinite; }
+.tt-wobble-2d { animation: tt-wobble-2d 0.8s ease-in-out; transform-origin: bottom center; }
+.tt-floor-in { animation: tt-rise 0.4s ease-out both; }
+
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
