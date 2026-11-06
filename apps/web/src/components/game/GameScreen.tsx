@@ -55,6 +55,7 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
   const streak = progress ? dailyStreak(progress, utcDateKey()) : 0;
 
   const [entry, setEntry] = useState(() => initialEntry(mode, replay));
+  const [askLeave, setAskLeave] = useState(false);
   const { gate, practice } = entry;
   const recorded = useRef<MatchSummary | null>(null);
   const introTimer = useRef<number | undefined>(undefined);
@@ -177,11 +178,24 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
             className="btn btn-ghost pointer-events-auto h-11 w-11 !p-0"
             aria-label="Leave game and go home"
             onClick={(e) => {
-              if (inProgress && !window.confirm("Leave this tower? Your progress in this match will be lost.")) e.preventDefault();
+              if (inProgress && !askLeave) {
+                e.preventDefault();
+                setAskLeave(true);
+              }
             }}
           >
             <IconArrowLeft className="h-5 w-5" />
           </Link>
+          {askLeave && inProgress && (
+            <div role="alertdialog" aria-labelledby="leave-title" className="card tt-pop pointer-events-auto absolute left-2 top-16 z-20 w-64 space-y-2 p-3 sm:left-4 sm:top-[4.5rem]">
+              <p id="leave-title" className="font-display text-base font-bold">Leave this tower?</p>
+              <p className="text-sm text-ink-soft">Your progress in this match will be lost.</p>
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/" className="btn btn-ghost !py-2 !text-base">Leave</Link>
+                <button type="button" className="btn btn-grape !py-2 !text-base" autoFocus onClick={() => setAskLeave(false)}>Stay</button>
+              </div>
+            </div>
+          )}
           {gate.kind === "ready" && status !== "finished" && <Hud />}
           <div className="pointer-events-auto flex gap-2">
             <SoundToggle />
