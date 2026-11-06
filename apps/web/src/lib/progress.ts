@@ -16,6 +16,8 @@ export interface LocalProgress {
   daily: Record<string, MatchSummary>;
   history: MatchSummary[];
   lifetime: { games: number; answered: number; correct: number; score: number; highestTower: number };
+  /** Best Endless Tower run (by floors, then score). `finishedAt` identifies the record run. */
+  endlessBest: { floors: number; score: number; finishedAt: string } | null;
 }
 
 function newPlayerId(): string {
@@ -24,7 +26,13 @@ function newPlayerId(): string {
 }
 
 function empty(): LocalProgress {
-  return { playerId: newPlayerId(), daily: {}, history: [], lifetime: { games: 0, answered: 0, correct: 0, score: 0, highestTower: 0 } };
+  return {
+    playerId: newPlayerId(),
+    daily: {},
+    history: [],
+    lifetime: { games: 0, answered: 0, correct: 0, score: 0, highestTower: 0 },
+    endlessBest: null,
+  };
 }
 
 export function loadProgress(): LocalProgress {
@@ -42,6 +50,12 @@ export function recordMatch(summary: MatchSummary, opts: { countsAsDaily: boolea
   const p = loadProgress();
   if (opts.countsAsDaily && summary.dateKey && !p.daily[summary.dateKey]) {
     p.daily[summary.dateKey] = summary;
+  }
+  if (summary.mode === "endless") {
+    const best = p.endlessBest;
+    if (!best || summary.floors > best.floors || (summary.floors === best.floors && summary.score > best.score)) {
+      p.endlessBest = { floors: summary.floors, score: summary.score, finishedAt: summary.finishedAt };
+    }
   }
   p.history = [summary, ...p.history].slice(0, HISTORY_LIMIT);
   p.lifetime.games += 1;

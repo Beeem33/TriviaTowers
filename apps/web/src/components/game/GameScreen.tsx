@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { ChoiceIndex, MatchSummary } from "@triviatowers/shared-types";
 import { utcDateKey } from "@triviatowers/game-core";
 import { useGame } from "@/game/game-store";
-import { LocalGameSession } from "@/game/session";
+import { EndlessGameSession, LocalGameSession } from "@/game/session";
 import { useSettings } from "@/game/settings-store";
 import { useReducedMotion } from "@/game/useReducedMotion";
 import { dailyStreak, loadProgress, recordMatch, todaysResult } from "@/lib/progress";
@@ -23,7 +23,7 @@ import { QuestionCard, REVEAL_MS } from "./QuestionCard";
 import { ResultsPanel } from "./ResultsPanel";
 import { ChallengeBanner } from "./ChallengeBanner";
 
-type Mode = "daily" | "quick";
+type Mode = "daily" | "quick" | "endless";
 type Gate = { kind: "played"; result: MatchSummary } | { kind: "ready" };
 
 const INTRO_MS = 1500;
@@ -62,7 +62,8 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
 
   /** Starts a fresh match. Touches only the external game store and timers. */
   const beginMatch = useCallback(() => {
-    const s = new LocalGameSession(mode, { playerId: loadProgress().playerId });
+    const playerId = loadProgress().playerId;
+    const s = mode === "endless" ? new EndlessGameSession({ playerId }) : new LocalGameSession(mode, { playerId });
     recorded.current = null;
     window.clearTimeout(introTimer.current);
     useGame.getState().load(s);
@@ -195,7 +196,7 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
         {status === "intro" && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <p className="tt-pop rounded-3xl bg-white/90 px-6 py-3 font-display text-2xl font-bold shadow-lg sm:text-3xl">
-              {mode === "daily" ? `Daily Tower${session?.dailyNumber ? ` #${session.dailyNumber}` : ""}` : "Quick Build"} — get ready!
+              {mode === "daily" ? `Daily Tower${session?.dailyNumber ? ` #${session.dailyNumber}` : ""}` : mode === "endless" ? "Endless Tower · 3 lives" : "Quick Build"} — get ready!
             </p>
           </div>
         )}

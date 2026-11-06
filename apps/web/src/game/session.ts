@@ -10,9 +10,15 @@
 import type { AnswerVerdict, ChoiceIndex, GameMode, MatchSummary, PublicQuestion, Question } from "@triviatowers/shared-types";
 import {
   DEFAULT_RULES,
+  ENDLESS_LIVES,
   SAMPLE_QUESTIONS,
+  createRng,
   dailyNumber,
+  endlessRules,
+  hashString,
+  pickEndlessQuestion,
   scoreAnswer,
+  selectDailySet,
   selectQuestionSet,
   shuffleChoices,
   summarizeMatch,
@@ -30,7 +36,13 @@ export interface GameSession {
   readonly dailyNumber?: number;
   readonly towerSeed: number;
   readonly rules: GameRules;
+  /** Questions available so far. Fixed-length modes know them all up front; Endless appends. */
   readonly questions: readonly PublicQuestion[];
+  /** Time allowed for question `index` (defaults to rules.questionTimeMs). */
+  timeLimitMs?(index: number): number;
+  /** Lives remaining, for modes that have them (Endless). */
+  readonly livesLeft?: number;
+  readonly maxLives?: number;
   /** `choice` null = timed out. `elapsedMs` is advisory for local play; servers measure their own. */
   submit(questionId: string, choice: ChoiceIndex | null, elapsedMs: number): Promise<AnswerVerdict>;
   finish(): Promise<MatchSummary>;
@@ -61,10 +73,11 @@ export class LocalGameSession implements GameSession {
     } else {
       seed = `quick|${opts.playerId}|${now.getTime()}`;
     }
-    const picked = selectQuestionSet(bank, seed, {
-      count: mode === "daily" ? this.rules.dailyQuestionCount : this.rules.quickQuestionCount,
-      difficultyRamp: mode === "daily",
-    }).map((q) => shuffleChoices(q, seed));
+    const picked = (
+      mode === "daily"
+        ? selectDailySet(bank, this.dateKey as string, this.rules.dailyQuestionCount)
+        : selectQuestionSet(bank, seed, { count: this.rules.quickQuestionCount, difficultyRamp: false })
+    ).map((q) => shuffleChoices(q, seed));
     this.full = new Map(picked.map((q) => [q.id, q]));
     this.questions = picked.map(toPublicQuestion);
     this.towerSeed = towerSeed(opts.playerId, seed);
@@ -104,5 +117,83 @@ export class LocalGameSession implements GameSession {
       dailyNumber: this.dailyNumber,
       rules: this.rules,
     });
+  }
+}
+
+/**
+ * Endless Tower: questions are drawn one at a time (harder and faster as the tower grows)
+ * until the player runs out of lives or the bank is exhausted.
+ */
+export class EndlessGameSession implements GameSession {
+  readonly mode = "endless" as const;
+  readonly ranked = false;
+  readonly rules = DEFAULT_RULES;
+  readonly towerSeed: number;
+  readonly maxLives = ENDLESS_LIVES;
+  livesLeft = ENDLESS_LIVES;
+  questions: readonly PublicQuestion[] = [];
+  private readonly bank: readonly Question[];
+  private readonly rng: () => number;
+  private readonly seed: string;
+  private readonly full = new Map<string, Question>();
+  private readonly limits: number[] = [];
+  private readonly answers: AnswerRecord[] = [];
+  private streak = 0;
+  private floors = 0;
+
+  constructor(opts: { playerId: string; now?: Date; bank?: readonly Question[] }) {
+    this.bank = opts.bank ?? SAMPLE_QUESTIONS;
+    this.seed = `endless|${opts.playerId}|${(opts.now ?? new Date()).getTime()}`;
+    this.rng = createRng(hashString(this.seed));
+    this.towerSeed = towerSeed(opts.playerId, this.seed);
+    this.drawNext();
+  }
+
+  private drawNext(): void {
+    const prev = this.questions[this.questions.length - 1];
+    const q = pickEndlessQuestion(this.bank, new Set(this.full.keys()), this.floors, prev?.category ?? null, this.rng);
+    if (!q) return;
+    const shuffled = shuffleChoices(q, this.seed);
+    this.full.set(q.id, shuffled);
+    this.limits.push(endlessRules(this.floors, this.rules).questionTimeMs);
+    this.questions = [...this.questions, toPublicQuestion(shuffled)];
+  }
+
+  timeLimitMs(index: number): number {
+    return this.limits[index] ?? this.rules.questionTimeMs;
+  }
+
+  async submit(questionId: string, choice: ChoiceIndex | null, elapsedMs: number): Promise<AnswerVerdict> {
+    const index = this.questions.findIndex((q) => q.id === questionId);
+    const q = this.full.get(questionId);
+    if (!q || index < 0) throw new Error("Unknown question");
+    if (index !== this.answers.length) throw new Error("Question already answered");
+    if (this.livesLeft <= 0) throw new Error("Run is over");
+    const correct = choice !== null && choice === q.correctIndex;
+    const rules = { ...this.rules, questionTimeMs: this.timeLimitMs(index) };
+    const s = scoreAnswer({ correct, elapsedMs, streakBefore: this.streak }, rules);
+    this.streak = s.streakAfter;
+    const ok = s.floorsAdded === 1;
+    this.answers.push({ correct: ok, elapsedMs: Math.min(elapsedMs, rules.questionTimeMs), points: s.points });
+    if (ok) this.floors++;
+    else this.livesLeft--;
+    if (this.livesLeft > 0) this.drawNext();
+    return {
+      questionId,
+      choiceIndex: choice,
+      correct: ok,
+      correctIndex: q.correctIndex,
+      explanation: q.explanation,
+      elapsedMs,
+      points: s.points,
+      basePoints: s.basePoints,
+      speedBonus: s.speedBonus,
+      streakBonus: s.streakBonus,
+      streakAfter: s.streakAfter,
+    };
+  }
+
+  async finish(): Promise<MatchSummary> {
+    return summarizeMatch(this.answers, { mode: "endless", ranked: false, rules: { ...this.rules, questionTimeMs: Number.MAX_SAFE_INTEGER } });
   }
 }

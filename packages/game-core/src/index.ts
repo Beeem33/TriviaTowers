@@ -5,5 +5,6 @@ export * from "./daily";
 export * from "./streak";
 export * from "./tower";
 export * from "./share";
+export * from "./endless";
 export * from "./questions/select";
 export { SAMPLE_QUESTIONS } from "./questions/sample-bank";

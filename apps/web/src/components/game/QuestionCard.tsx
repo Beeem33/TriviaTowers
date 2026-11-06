@@ -78,9 +78,11 @@ export function QuestionCard({ onPick, onNext }: { onPick: (i: ChoiceIndex) => v
   const total = useGame((s) => s.questions.length);
   const deadline = useGame((s) => s.deadline);
   const verdict = useGame((s) => s.verdict);
-  const rules = useGame((s) => s.session?.rules);
+  const livesLeft = useGame((s) => s.livesLeft);
+  const timeLimitMs = useGame((s) => s.timeLimitMs);
+  const hasSession = useGame((s) => s.session !== null);
 
-  if (!question || !rules) return null;
+  if (!question || !hasSession) return null;
   const meta = CATEGORY_META[question.category];
   const shortAnswers = question.choices.every((c) => c.length <= 16);
   const revealing = status === "reveal" && verdict;
@@ -100,7 +102,7 @@ export function QuestionCard({ onPick, onNext }: { onPick: (i: ChoiceIndex) => v
       </h2>
 
       {!revealing ? (
-        <TimerBar deadline={deadline} durationMs={rules.questionTimeMs} running={status === "question"} />
+        <TimerBar deadline={deadline} durationMs={timeLimitMs} running={status === "question"} />
       ) : (
         <div
           className={`tt-pop flex items-start gap-3 rounded-2xl px-3 py-2.5 ${verdict.correct ? "bg-emerald-50 text-good" : "bg-rose-50 text-bad"}`}
@@ -119,7 +121,7 @@ export function QuestionCard({ onPick, onNext }: { onPick: (i: ChoiceIndex) => v
             <p className="text-sm font-semibold text-ink-soft">
               {verdict.correct
                 ? `Base ${verdict.basePoints} · Speed +${verdict.speedBonus} · Streak +${verdict.streakBonus}`
-                : `Answer: ${question.choices[verdict.correctIndex]}. Your streak resets — keep building!`}
+                : `Answer: ${question.choices[verdict.correctIndex]}. ${livesLeft !== null ? (livesLeft > 0 ? `${livesLeft} ${livesLeft === 1 ? "life" : "lives"} left!` : "Out of lives — let’s see your tower!") : "Your streak resets — keep building!"}`}
             </p>
           </div>
         </div>

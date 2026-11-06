@@ -20,13 +20,18 @@ export function RecentTowers() {
             <li key={r.finishedAt} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-3 py-2">
               <span className="grid h-8 w-8 place-items-center rounded-full bg-grape font-display font-bold text-white">{i + 1}</span>
               <span className="flex-1 text-sm font-bold">
-                {r.mode === "daily" ? `Daily #${r.dailyNumber}` : "Quick Build"}
+                {r.mode === "daily" ? `Daily #${r.dailyNumber}` : r.mode === "endless" ? "Endless Tower" : "Quick Build"}
                 <span className="block text-xs font-semibold text-ink-soft">{r.floors} floors · {r.correct}/{r.total} correct</span>
               </span>
               <span className="font-display text-lg font-bold tabular-nums">{r.score.toLocaleString("en-US")}</span>
             </li>
           ))}
         </ol>
+      )}
+      {p?.endlessBest && (
+        <p className="rounded-2xl bg-violet-50 px-3 py-2 text-sm font-bold text-grape-dark">
+          🏆 Endless record: {p.endlessBest.floors} floors · {p.endlessBest.score.toLocaleString("en-US")} points
+        </p>
       )}
       {p && p.lifetime.games > 0 && (
         <p className="text-xs text-ink-soft">

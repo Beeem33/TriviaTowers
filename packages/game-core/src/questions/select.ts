@@ -1,5 +1,6 @@
 import type { Question, PublicQuestion, Difficulty, ChoiceIndex, Choices } from "@triviatowers/shared-types";
 import { createRng, hashString, seededShuffle } from "../random";
+import { addDays } from "../daily";
 
 const DIFFICULTY_ORDER: Record<Difficulty, number> = { easy: 0, medium: 1, hard: 2 };
 
@@ -83,4 +84,18 @@ export function shuffleChoices(q: Question, seed: string): Question {
 /** Strips the answer key and editorial metadata. */
 export function toPublicQuestion(q: Question): PublicQuestion {
   return { id: q.id, prompt: q.prompt, choices: q.choices, category: q.category, difficulty: q.difficulty };
+}
+
+/**
+ * Daily set with a no-repeat window: questions used on the previous `lookbackDays` days
+ * (computed without their own lookback, so this stays O(days) and deterministic) are skipped.
+ * Production dailies are curated by admins; this is the offline/auto-draft version.
+ */
+export function selectDailySet(bank: readonly Question[], dateKey: string, count: number, lookbackDays = 7): Question[] {
+  const recent = new Set<string>();
+  for (let d = 1; d <= lookbackDays; d++) {
+    for (const q of selectQuestionSet(bank, `daily|${addDays(dateKey, -d)}`, { count })) recent.add(q.id);
+  }
+  const enough = bank.length - recent.size >= count * 2;
+  return selectQuestionSet(bank, `daily|${dateKey}`, { count, excludeIds: enough ? recent : undefined });
 }

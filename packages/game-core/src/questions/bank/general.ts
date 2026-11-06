@@ -1,0 +1,27 @@
+import { W, type Row } from "./row";
+
+export const general: Row[] = [
+  ["gen-001", "general", "easy", "How many sides does a hexagon have?", ["6", "5", "7", "8"], "Hexa- comes from the Greek for six. Honeycomb cells are hexagons.", W + "Hexagon"],
+  ["gen-002", "general", "medium", "How many minutes are there in a day?", ["1,440", "1,240", "1,600", "2,400"], "24 hours × 60 minutes = 1,440 minutes.", W + "Day"],
+  ["gen-003", "general", "medium", "Which language has the most native speakers?", ["Mandarin Chinese", "Spanish", "English", "Hindi"], "Mandarin has roughly a billion native speakers; English has the most speakers when learners are included.", W + "List_of_languages_by_number_of_native_speakers"],
+  ["gen-004", "general", "easy", "How many days are in a leap year?", ["366", "365", "364", "367"], "The extra day is February 29.", W + "Leap_year"],
+  ["gen-005", "general", "easy", "Using the most common count, how many continents are there?", ["7", "6", "5", "8"], "Africa, Antarctica, Asia, Australia, Europe, North America and South America.", W + "Continent"],
+  ["gen-006", "general", "easy", "At what temperature does water freeze in Celsius?", ["0 °C", "32 °C", "10 °C", "−10 °C"], "32 is the freezing point in Fahrenheit.", W + "Melting_point"],
+  ["gen-007", "general", "easy", "Which shape has four equal sides and four right angles?", ["Square", "Rhombus", "Rectangle", "Trapezoid"], "A rhombus has four equal sides, but its angles needn't be right angles.", W + "Square"],
+  ["gen-008", "general", "easy", "In which direction does the Sun rise?", ["East", "West", "North", "South"], "Earth spins from west to east, so the Sun appears to rise in the east.", W + "Sunrise"],
+  ["gen-009", "general", "medium", "How many squares are on a standard chessboard?", ["64", "81", "100", "49"], "An 8 × 8 grid of alternating light and dark squares.", W + "Chessboard"],
+  ["gen-010", "general", "medium", "What is the Roman numeral for 50?", ["L", "C", "D", "X"], "C is 100, D is 500 and X is 10.", W + "Roman_numerals"],
+  ["gen-011", "general", "medium", "How many zeros are in one million?", ["6", "5", "7", "9"], "1,000,000 — a billion has nine zeros.", W + "1,000,000"],
+  ["gen-012", "general", "medium", "What is a word that reads the same forwards and backwards, like “level”?", ["A palindrome", "An anagram", "A homophone", "An acronym"], "“Racecar” and “noon” are palindromes too.", W + "Palindrome"],
+  ["gen-013", "general", "medium", "How many hours are in a week?", ["168", "144", "172", "160"], "7 days × 24 hours = 168.", W + "Week"],
+  ["gen-014", "general", "medium", "What is the currency of Japan?", ["Yen", "Won", "Yuan", "Ringgit"], "The won is South Korea's currency and the yuan is China's.", W + "Japanese_yen"],
+  ["gen-015", "general", "medium", "Which planet is often called the “Morning Star”?", ["Venus", "Mars", "Jupiter", "Mercury"], "Venus is the brightest planet in our sky, often seen just before sunrise.", W + "Venus"],
+  ["gen-016", "general", "medium", "What do the interior angles of a triangle add up to?", ["180 degrees", "360 degrees", "90 degrees", "270 degrees"], "A four-sided shape's angles add up to 360 degrees.", W + "Triangle"],
+  ["gen-017", "general", "medium", "What is the square root of 144?", ["12", "14", "11", "16"], "12 × 12 = 144, also called a gross.", W + "144_(number)"],
+  ["gen-018", "general", "medium", "What is the smallest prime number?", ["2", "1", "3", "0"], "2 is also the only even prime. 1 is not considered prime.", W + "Prime_number"],
+  ["gen-019", "general", "medium", "What is 15% of 200?", ["30", "15", "20", "35"], "10% of 200 is 20, and 5% is 10.", W + "Percentage"],
+  ["gen-020", "general", "hard", "Which letter does not appear in the name of any US state?", ["Q", "X", "Z", "J"], "X is in Texas, Z in Arizona and J in New Jersey.", W + "U.S._state"],
+  ["gen-021", "general", "hard", "In Morse code, which letter is a single dot?", ["E", "T", "A", "I"], "E is the most common letter in English, so it got the shortest code. T is a single dash.", W + "Morse_code"],
+  ["gen-022", "general", "hard", "The abbreviation “e.g.” comes from which Latin phrase?", ["Exempli gratia", "Et genera", "Ex gratia", "Ergo generalis"], "It means “for the sake of example”. “i.e.” is “id est” — “that is”.", W + "List_of_Latin_abbreviations"],
+  ["gen-023", "general", "hard", "Which year is written as MCM in Roman numerals?", ["1900", "1100", "2100", "1400"], "M = 1000 and CM = 900.", W + "Roman_numerals"],
+];

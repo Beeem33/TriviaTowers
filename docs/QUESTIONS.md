@@ -15,5 +15,6 @@ Guidelines
 - Source: a reputable reference URL that states the fact. Reviewer opens it before approving.
 - Never generate or modify trivia live during matches. AI-drafted questions must be human-verified.
 
-The Phase 1 sample bank (`packages/game-core/src/questions/sample-bank.ts`) uses a "correct answer
+The Phase 1 sample bank (`packages/game-core/src/questions/bank/<category>.ts`, combined in
+`sample-bank.ts`) uses a "correct answer
 first" authoring convention; choices are shuffled deterministically at selection time.

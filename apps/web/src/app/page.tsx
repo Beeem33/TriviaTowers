@@ -6,7 +6,7 @@ import { RecentTowers } from "@/components/home/RecentTowers";
 const STEPS = [
   { emoji: "❓", title: "Answer", text: "10 trivia questions, 15 seconds each." },
   { emoji: "🧱", title: "Build", text: "Every correct answer adds a floor. Fast answers and streaks score more." },
-  { emoji: "🏆", title: "Compete", text: "One daily tower for everyone. Share it and challenge your friends." },
+  { emoji: "🏆", title: "Compete", text: "One daily tower for everyone. Share it, challenge friends, or climb forever in Endless." },
 ];
 
 export default function HomePage() {

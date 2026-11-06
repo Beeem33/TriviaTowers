@@ -4,7 +4,7 @@ Daily trivia where every correct answer adds a floor to your 3D tower on a float
 Answer today's 10 questions, keep your streak, challenge friends, and share how high you built.
 
 > **Status: Phase 1 — playable local prototype.** The full game loop runs in the browser with a
-> 52-question sample bank. Progress is stored on the device. Online daily challenges, accounts,
+> 256-question sample bank and three modes: Daily Tower, Quick Build and Endless Tower. Progress is stored on the device. Online daily challenges, accounts,
 > leaderboards and multiplayer come in later phases ([roadmap](docs/ROADMAP.md)).
 > Local play is **unranked by design**: the sample answer key ships in the bundle.
 
@@ -41,7 +41,8 @@ apps/web/                Next.js 16 app (App Router, React 19, Tailwind 4, React
   src/audio/             Procedural Web Audio sound effects (no audio files)
   e2e/                   Playwright tests
 packages/game-core/      Framework-free rules shared by browser + future Edge Functions:
-                         scoring, daily calendar/streaks, question selection, tower blueprints
+                         scoring, daily calendar/streaks, question selection, Endless rules,
+                         tower blueprints, question bank (src/questions/bank/<category>.ts)
 packages/shared-types/   Types: questions, results, realtime room event protocol
 supabase/                Migrations, Edge Functions, seed data (Phase 2+)
 docs/                    Architecture, decisions, roadmap, security, deployment, questions

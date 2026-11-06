@@ -73,7 +73,12 @@ export async function renderShareCard(opts: {
   ctx.fillText("TriviaTowers.io", W / 2, 120);
   ctx.font = '600 40px "Fredoka Variable", system-ui, sans-serif';
   ctx.fillStyle = "#1d2747";
-  const subtitle = summary.mode === "daily" && summary.dailyNumber ? `Daily Tower #${summary.dailyNumber}` : "Quick Build";
+  const subtitle =
+    summary.mode === "daily" && summary.dailyNumber
+      ? `Daily Tower #${summary.dailyNumber}`
+      : summary.mode === "endless"
+        ? "Endless Tower"
+        : "Quick Build";
   ctx.fillText(`${subtitle} · ${opts.name}`, W / 2, 182);
 
   // Stats card.
@@ -103,11 +108,12 @@ export async function renderShareCard(opts: {
     ctx.fillText(label, cx, cardY + 142);
   });
 
-  // Spoiler-free outcome row.
-  const n = summary.outcomes.length;
+  // Spoiler-free outcome row (most recent 20 for long Endless runs).
+  const outcomes = summary.outcomes.slice(-20);
+  const n = outcomes.length;
   const size = Math.min(56, (W - 260) / Math.max(1, n) - 10);
   const rowW = n * (size + 10) - 10;
-  summary.outcomes.forEach((ok, i) => {
+  outcomes.forEach((ok, i) => {
     const x = (W - rowW) / 2 + i * (size + 10);
     roundRect(ctx, x, cardY + 172, size, size, 12);
     ctx.fillStyle = ok ? "#1f9d5c" : "#e23a55";

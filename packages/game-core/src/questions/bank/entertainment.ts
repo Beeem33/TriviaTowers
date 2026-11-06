@@ -1,0 +1,28 @@
+import { W, type Row } from "./row";
+
+export const entertainment: Row[] = [
+  ["ent-001", "entertainment", "easy", "How many keys does a standard modern piano have?", ["88", "76", "92", "64"], "52 white keys and 36 black keys make 88.", W + "Piano"],
+  ["ent-002", "entertainment", "easy", "Which band released the album “Abbey Road”?", ["The Beatles", "The Rolling Stones", "Queen", "Pink Floyd"], "Abbey Road (1969) is named after the London street where the Beatles recorded it.", W + "Abbey_Road"],
+  ["ent-003", "entertainment", "easy", "Sherlock Holmes famously lives on which street?", ["Baker Street", "Oxford Street", "Fleet Street", "Downing Street"], "Arthur Conan Doyle placed the detective at 221B Baker Street, London.", W + "221B_Baker_Street"],
+  ["ent-004", "entertainment", "medium", "Who painted the ceiling of the Sistine Chapel?", ["Michelangelo", "Raphael", "Leonardo da Vinci", "Botticelli"], "Michelangelo painted the ceiling between 1508 and 1512.", W + "Sistine_Chapel_ceiling"],
+  ["ent-005", "entertainment", "easy", "Who painted the Mona Lisa?", ["Leonardo da Vinci", "Michelangelo", "Raphael", "Rembrandt"], "Leonardo worked on it for years, starting around 1503.", W + "Mona_Lisa"],
+  ["ent-006", "entertainment", "easy", "How many strings does a standard guitar have?", ["6", "4", "5", "8"], "Standard tuning, low to high, is E-A-D-G-B-E.", W + "Guitar"],
+  ["ent-007", "entertainment", "easy", "Who wrote the Harry Potter books?", ["J.K. Rowling", "Roald Dahl", "C.S. Lewis", "Suzanne Collins"], "The first book was published in 1997.", W + "J._K._Rowling"],
+  ["ent-008", "entertainment", "easy", "In “The Wizard of Oz”, what is the name of Dorothy's dog?", ["Toto", "Spot", "Rex", "Buddy"], "Toto was played by a female Cairn Terrier named Terry in the 1939 film.", W + "Toto_(Oz)"],
+  ["ent-009", "entertainment", "easy", "Who wrote “Romeo and Juliet”?", ["William Shakespeare", "Charles Dickens", "Jane Austen", "Christopher Marlowe"], "Shakespeare wrote it in the mid-1590s.", W + "Romeo_and_Juliet"],
+  ["ent-010", "entertainment", "easy", "How many musicians play in a quartet?", ["4", "3", "5", "8"], "A string quartet has two violins, a viola and a cello.", W + "Quartet"],
+  ["ent-011", "entertainment", "medium", "Which composer, who lost his hearing, wrote the “Moonlight” Sonata?", ["Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Johann Sebastian Bach", "Frédéric Chopin"], "Beethoven kept composing masterpieces even after becoming almost completely deaf.", W + "Piano_Sonata_No._14_(Beethoven)"],
+  ["ent-012", "entertainment", "medium", "Who painted “The Starry Night”?", ["Vincent van Gogh", "Claude Monet", "Pablo Picasso", "Salvador Dalí"], "Van Gogh painted it in 1889 from his room at an asylum in Saint-Rémy.", W + "The_Starry_Night"],
+  ["ent-013", "entertainment", "medium", "Which city is home to the opera house with sail-shaped roofs?", ["Sydney", "Vienna", "Milan", "Paris"], "The Sydney Opera House was designed by Danish architect Jørn Utzon.", W + "Sydney_Opera_House"],
+  ["ent-014", "entertainment", "medium", "Who wrote the novel “1984”?", ["George Orwell", "Aldous Huxley", "Ray Bradbury", "H.G. Wells"], "Orwell's 1949 novel gave us “Big Brother” and “doublethink”.", W + "Nineteen_Eighty-Four"],
+  ["ent-015", "entertainment", "medium", "Which Shakespeare play includes the line “To be, or not to be”?", ["Hamlet", "Macbeth", "Othello", "King Lear"], "Prince Hamlet speaks it in Act 3, Scene 1.", W + "To_be,_or_not_to_be"],
+  ["ent-016", "entertainment", "medium", "What is the highest standard female singing voice?", ["Soprano", "Alto", "Mezzo-soprano", "Contralto"], "Contralto is the lowest female voice type.", W + "Soprano"],
+  ["ent-017", "entertainment", "medium", "Which artist painted the melting clocks of “The Persistence of Memory”?", ["Salvador Dalí", "René Magritte", "Frida Kahlo", "Joan Miró"], "Dalí painted it in 1931; it hangs in New York's Museum of Modern Art.", W + "The_Persistence_of_Memory"],
+  ["ent-018", "entertainment", "medium", "In which museum is the Mona Lisa displayed?", ["The Louvre", "The Uffizi", "The Prado", "The British Museum"], "It was stolen from the Louvre in 1911 and recovered two years later.", W + "Louvre"],
+  ["ent-019", "entertainment", "medium", "Who composed “The Four Seasons”?", ["Antonio Vivaldi", "Johann Sebastian Bach", "George Frideric Handel", "Joseph Haydn"], "Vivaldi's four violin concertos were published in 1725.", W + "The_Four_Seasons_(Vivaldi)"],
+  ["ent-020", "entertainment", "medium", "Who wrote “Pride and Prejudice”?", ["Jane Austen", "Charlotte Brontë", "Emily Brontë", "Mary Shelley"], "It was published in 1813.", W + "Pride_and_Prejudice"],
+  ["ent-021", "entertainment", "medium", "The oboe belongs to which family of instruments?", ["Woodwind", "Brass", "Strings", "Percussion"], "Orchestras traditionally tune to the oboe's A.", W + "Oboe"],
+  ["ent-022", "entertainment", "medium", "Which famous creature first appeared in a novel by Mary Shelley?", ["Frankenstein's monster", "Dracula", "The Mummy", "The Wolf Man"], "Shelley published “Frankenstein” in 1818, when she was 20. Dracula came from Bram Stoker.", W + "Frankenstein"],
+  ["ent-023", "entertainment", "hard", "How many symphonies did Beethoven complete?", ["9", "5", "7", "12"], "His Ninth ends with the “Ode to Joy”.", W + "Symphony_No._9_(Beethoven)"],
+  ["ent-024", "entertainment", "hard", "Who wrote “Don Quixote”?", ["Miguel de Cervantes", "Gabriel García Márquez", "Lope de Vega", "Jorge Luis Borges"], "Published in two parts (1605 and 1615), it is often called the first modern novel.", W + "Don_Quixote"],
+];

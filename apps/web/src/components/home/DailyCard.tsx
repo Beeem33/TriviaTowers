@@ -51,8 +51,9 @@ export function DailyCard() {
         </Link>
         <div className="grid grid-cols-2 gap-2">
           <Link href="/play?mode=quick" className="btn btn-mint">Quick Build</Link>
-          <Link href="/friends" className="btn btn-grape">Play With Friends</Link>
+          <Link href="/play?mode=endless" className="btn btn-grape">Endless Tower</Link>
         </div>
+        <Link href="/friends" className="btn btn-ghost">Play With Friends</Link>
       </div>
 
       <p className="text-center text-sm text-ink-soft">

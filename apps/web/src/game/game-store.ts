@@ -24,6 +24,11 @@ interface GameState {
   shownAt: number;
   /** performance.now() deadline for the current question. */
   deadline: number;
+  /** Time allowed for the current question. */
+  timeLimitMs: number;
+  /** Lives left (Endless only; null in fixed-length modes). */
+  livesLeft: number | null;
+  maxLives: number | null;
   selected: ChoiceIndex | null;
   verdict: AnswerVerdict | null;
   verdicts: AnswerVerdict[];
@@ -51,6 +56,9 @@ const initial = {
   index: 0,
   shownAt: 0,
   deadline: 0,
+  timeLimitMs: 15_000,
+  livesLeft: null as number | null,
+  maxLives: null as number | null,
   selected: null,
   verdict: null,
   verdicts: [] as AnswerVerdict[],
@@ -67,13 +75,23 @@ const initial = {
 export const useGame = create<GameState>()((set, get) => ({
   ...initial,
 
-  load: (session) => set((s) => ({ ...initial, matchSeq: s.matchSeq + 1, session, questions: session.questions, status: "intro" })),
+  load: (session) =>
+    set((s) => ({
+      ...initial,
+      matchSeq: s.matchSeq + 1,
+      session,
+      questions: session.questions,
+      livesLeft: session.livesLeft ?? null,
+      maxLives: session.maxLives ?? null,
+      status: "intro",
+    })),
 
   beginQuestion: () => {
     const { session } = get();
     if (!session) return;
     const now = performance.now();
-    set({ status: "question", shownAt: now, deadline: now + session.rules.questionTimeMs, selected: null, verdict: null });
+    const limit = session.timeLimitMs?.(get().index) ?? session.rules.questionTimeMs;
+    set({ status: "question", shownAt: now, deadline: now + limit, timeLimitMs: limit, selected: null, verdict: null });
   },
 
   answer: async (choice) => {
@@ -89,6 +107,9 @@ export const useGame = create<GameState>()((set, get) => ({
       set({
         status: "reveal",
         verdict,
+        // Endless sessions append the next question (or don't, when the run is over).
+        questions: session.questions,
+        livesLeft: session.livesLeft ?? null,
         verdicts: [...s.verdicts, verdict],
         score: s.score + verdict.points,
         streak: verdict.streakAfter,

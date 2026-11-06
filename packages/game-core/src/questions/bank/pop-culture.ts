@@ -1,0 +1,28 @@
+import { W, type Row } from "./row";
+
+export const popCulture: Row[] = [
+  ["pop-001", "pop-culture", "easy", "What does the “K” in K-pop stand for?", ["Korean", "Kawaii", "Kinetic", "Karaoke"], "K-pop is popular music from South Korea.", W + "K-pop"],
+  ["pop-002", "pop-culture", "easy", "What is the name of Superman's home planet?", ["Krypton", "Gallifrey", "Vulcan", "Tatooine"], "Superman (Kal-El) was sent to Earth as a baby before Krypton exploded.", W + "Krypton_(comics)"],
+  ["pop-003", "pop-culture", "easy", "Which video game hero is a plumber who wears a red cap marked “M”?", ["Mario", "Luigi", "Wario", "Sonic"], "Mario first appeared in Donkey Kong (1981), originally as “Jumpman”.", W + "Mario"],
+  ["pop-004", "pop-culture", "easy", "What is the name of the fairy in “Peter Pan”?", ["Tinker Bell", "Navi", "Flora", "Fauna"], "Tinker Bell first appeared in J.M. Barrie's 1904 play.", W + "Tinker_Bell"],
+  ["pop-005", "pop-culture", "easy", "Which superhero is known as the “Dark Knight”?", ["Batman", "Superman", "Iron Man", "Spider-Man"], "Batman debuted in Detective Comics #27 in 1939.", W + "Batman"],
+  ["pop-006", "pop-culture", "easy", "What colour is Pac-Man?", ["Yellow", "Red", "Blue", "Green"], "Pac-Man was released by Namco in 1980.", W + "Pac-Man"],
+  ["pop-007", "pop-culture", "easy", "What is the name of the snowman in Disney's “Frozen”?", ["Olaf", "Sven", "Kristoff", "Hans"], "Sven is Kristoff's reindeer.", W + "Olaf_(Frozen)"],
+  ["pop-008", "pop-culture", "easy", "What is the name of SpongeBob's starfish best friend?", ["Patrick Star", "Squidward", "Sandy Cheeks", "Gary"], "Gary is SpongeBob's pet snail.", W + "Patrick_Star"],
+  ["pop-009", "pop-culture", "easy", "Which yellow electric Pokémon is Ash's famous partner?", ["Pikachu", "Raichu", "Jigglypuff", "Pichu"], "Pichu evolves into Pikachu, which evolves into Raichu.", W + "Pikachu"],
+  ["pop-010", "pop-culture", "easy", "In “The Lion King”, what is the name of Simba's father?", ["Mufasa", "Scar", "Rafiki", "Zazu"], "Scar is Mufasa's jealous brother.", W + "Mufasa"],
+  ["pop-011", "pop-culture", "medium", "Which game lets you mine blocks and build, while avoiding Creepers?", ["Minecraft", "Roblox", "Terraria", "Fortnite"], "Minecraft is one of the best-selling video games of all time.", W + "Minecraft"],
+  ["pop-012", "pop-culture", "medium", "Which school of witchcraft and wizardry does Harry Potter attend?", ["Hogwarts", "Durmstrang", "Beauxbatons", "Ilvermorny"], "Durmstrang and Beauxbatons compete in the Triwizard Tournament.", W + "Hogwarts"],
+  ["pop-013", "pop-culture", "medium", "In “Star Wars”, who is Luke Skywalker's father?", ["Darth Vader", "Obi-Wan Kenobi", "Yoda", "Han Solo"], "The reveal in “The Empire Strikes Back” (1980) is one of cinema's most famous twists.", W + "Darth_Vader"],
+  ["pop-014", "pop-culture", "medium", "Which hobbit carries the One Ring to Mount Doom?", ["Frodo Baggins", "Bilbo Baggins", "Samwise Gamgee", "Pippin Took"], "Bilbo found the Ring; Frodo inherited the quest to destroy it.", W + "Frodo_Baggins"],
+  ["pop-015", "pop-culture", "medium", "Which Marvel hero wields the hammer Mjölnir?", ["Thor", "Hulk", "Captain America", "Loki"], "Only those deemed “worthy” can lift it.", W + "Mjolnir_(comics)"],
+  ["pop-016", "pop-culture", "medium", "What is the name of the cowboy toy in “Toy Story”?", ["Woody", "Buzz Lightyear", "Jessie", "Rex"], "“Toy Story” (1995) was the first fully computer-animated feature film.", W + "Woody_(Toy_Story)"],
+  ["pop-017", "pop-culture", "medium", "What is the name of the fictional African nation in “Black Panther”?", ["Wakanda", "Zamunda", "Genovia", "Latveria"], "Zamunda is from “Coming to America”.", W + "Wakanda"],
+  ["pop-018", "pop-culture", "medium", "Which Nintendo console, released in 2017, works both docked to a TV and as a handheld?", ["Nintendo Switch", "Wii U", "GameCube", "Nintendo 3DS"], "The Switch's detachable Joy-Con controllers slide off the sides.", W + "Nintendo_Switch"],
+  ["pop-019", "pop-culture", "medium", "In “Back to the Future”, which car becomes a time machine?", ["DeLorean", "Mustang", "Corvette", "Beetle"], "It needs 1.21 gigawatts and 88 mph to travel through time.", W + "DeLorean_time_machine"],
+  ["pop-020", "pop-culture", "medium", "Which company created Sonic the Hedgehog?", ["Sega", "Nintendo", "Sony", "Atari"], "Sonic debuted in 1991 as Sega's mascot.", W + "Sonic_the_Hedgehog"],
+  ["pop-021", "pop-culture", "medium", "In “The Legend of Zelda” games, what is the name of the hero you play?", ["Link", "Zelda", "Ganon", "Epona"], "Zelda is the princess; Epona is Link's horse.", W + "Link_(The_Legend_of_Zelda)"],
+  ["pop-022", "pop-culture", "medium", "What is the coffee shop called in the TV show “Friends”?", ["Central Perk", "Java Joe's", "The Daily Grind", "Monk's Café"], "Monk's Café is the diner from “Seinfeld”.", W + "Central_Perk"],
+  ["pop-023", "pop-culture", "hard", "What are the falling shapes in Tetris called?", ["Tetrominoes", "Polyblocks", "Quadrangles", "Pentominoes"], "Each tetromino is made of four squares; pentominoes use five.", W + "Tetromino"],
+  ["pop-024", "pop-culture", "hard", "What does “GIF” stand for?", ["Graphics Interchange Format", "General Image File", "Graphic Image Frame", "Global Image Format"], "The format was introduced by CompuServe in 1987.", W + "GIF"],
+];

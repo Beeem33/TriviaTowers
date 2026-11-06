@@ -41,3 +41,6 @@ export const IconStar = ({ className }: P) => (
 export const IconArrowLeft = ({ className }: P) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
 );
+export const IconHeart = ({ className }: P) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.9 4.5c2.1 0 3.7 1.2 5.1 3 1.4-1.8 3-3 5.1-3 3.9 0 6 3.9 4.5 7.3C19.5 16.4 12 21 12 21Z" /></svg>
+);

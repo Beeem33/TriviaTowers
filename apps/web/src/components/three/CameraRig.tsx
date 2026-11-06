@@ -74,7 +74,7 @@ export function CameraRig({ mode, floors, reducedMotion, interactive }: {
 
   useEffect(() => (interactive ? attachDrag(gl.domElement, rig.current) : undefined), [gl, interactive]);
 
-  useFrame(({ clock, camera, size }, rawDt) => {
+  useFrame(({ clock, camera, size, scene }, rawDt) => {
     const dt = Math.min(rawDt, 0.05);
     const s = rig.current;
     const t = clock.elapsedTime;
@@ -102,6 +102,11 @@ export function CameraRig({ mode, floors, reducedMotion, interactive }: {
     const horiz = Math.cos(s.el) * s.dist;
     camera.position.set(Math.sin(s.az) * horiz, s.focusY + Math.sin(s.el) * s.dist, Math.cos(s.az) * horiz);
     camera.lookAt(_target.set(0, s.focusY, 0));
+    // Keep fog behind the tower however far the camera pulls back for tall towers.
+    if (scene.fog instanceof THREE.Fog) {
+      scene.fog.near = s.dist + 14;
+      scene.fog.far = s.dist + 60;
+    }
   });
 
   return null;

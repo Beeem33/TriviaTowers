@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/game-store";
-import { IconFlame, IconStar, IconTower } from "@/components/ui/Icons";
+import { IconFlame, IconHeart, IconStar, IconTower } from "@/components/ui/Icons";
 
 /** Counts smoothly toward `value`. */
 function useCountUp(value: number, ms = 600) {
@@ -42,12 +42,21 @@ export function Hud() {
   const streak = useGame((s) => s.streak);
   const index = useGame((s) => s.index);
   const total = useGame((s) => s.questions.length);
+  const livesLeft = useGame((s) => s.livesLeft);
+  const maxLives = useGame((s) => s.maxLives);
   const shownScore = useCountUp(score);
   const qNum = Math.min(total, index + 1);
 
   return (
     <div className="pointer-events-none flex items-center justify-center gap-1 sm:gap-2">
-      {total > 0 && (
+      {livesLeft !== null && maxLives !== null && (
+        <div className="flex items-center gap-0.5 rounded-2xl bg-white/90 px-2 py-1 shadow-md sm:py-1.5" aria-label={`${livesLeft} of ${maxLives} lives left`}>
+          {Array.from({ length: maxLives }, (_, i) => (
+            <IconHeart key={i} className={`h-5 w-5 sm:h-6 sm:w-6 ${i < livesLeft ? "text-bad" : "text-slate-300"}`} />
+          ))}
+        </div>
+      )}
+      {total > 0 && livesLeft === null && (
         <div className="rounded-2xl bg-ink/80 px-2.5 py-1 font-display text-base font-bold text-white shadow-md sm:px-3 sm:py-1.5 sm:text-lg" aria-label={`Question ${qNum} of ${total}`}>
           {qNum}<span className="opacity-60">/{total}</span>
         </div>

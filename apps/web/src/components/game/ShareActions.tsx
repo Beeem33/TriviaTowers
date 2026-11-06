@@ -29,7 +29,7 @@ export function ShareActions({ summary, streak }: { summary: MatchSummary; strea
   };
 
   const site = siteUrl();
-  const challengeUrl = `${site}/play?mode=${summary.mode === "daily" ? "daily" : "quick"}&ch=${encodeChallenge({
+  const challengeUrl = `${site}/play?mode=${summary.mode === "battle" ? "quick" : summary.mode}&ch=${encodeChallenge({
     name,
     score: summary.score,
     floors: summary.floors,
@@ -42,7 +42,7 @@ export function ShareActions({ summary, streak }: { summary: MatchSummary; strea
   const makeImage = async () => {
     const blob = await renderShareCard({ summary, name, streak, towerImage: captureScene(), site });
     if (!blob) throw new Error("Could not create image");
-    const fileName = summary.dailyNumber ? `triviatowers-daily-${summary.dailyNumber}.png` : "triviatowers-quick-build.png";
+    const fileName = summary.dailyNumber ? `triviatowers-daily-${summary.dailyNumber}.png` : `triviatowers-${summary.mode}.png`;
     return new File([blob], fileName, { type: "image/png" });
   };
 

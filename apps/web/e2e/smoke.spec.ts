@@ -57,3 +57,17 @@ test("challenge links show who challenged you", async ({ page }) => {
   await expect(page.getByText(/Alex/)).toBeVisible();
   await expect(page.getByText(/challenged you/)).toBeVisible();
 });
+
+test("Endless Tower runs until three lives are lost", async ({ page }) => {
+  await page.goto("/play?mode=endless");
+  await expect(page.getByLabel("3 of 3 lives left")).toBeVisible({ timeout: 15_000 });
+  for (let i = 0; i < 300; i++) {
+    if (await page.getByText("Final score").isVisible()) break;
+    const first = page.getByRole("group", { name: "Answers" }).getByRole("button").first();
+    if (await first.isEnabled().catch(() => false)) await page.keyboard.press("1");
+    await page.getByRole("button", { name: /Next question|See my tower/ }).click({ timeout: 5_000 }).catch(() => {});
+  }
+  await expect(page.getByText("Final score")).toBeVisible();
+  await expect(page.getByText("Endless Tower", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Climb again" })).toBeVisible();
+});
