@@ -3,7 +3,7 @@ import { ClientEffects } from "@/components/ui/ClientEffects";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://triviatowers.io"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://triviatowers.io"),
   title: {
     default: "TriviaTowers.io — Daily trivia. Build your tower.",
     template: "%s · TriviaTowers.io",
