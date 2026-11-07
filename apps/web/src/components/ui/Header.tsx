@@ -53,7 +53,7 @@ export function Footer() {
       </nav>
       <p>
         © {new Date().getFullYear()} TriviaTowers.io · Daily trivia, one floor at a time.
-        <span className="ml-1 opacity-80">Early preview — progress is saved in this browser only.</span>
+        <span className="ml-1 opacity-80">Early preview.</span>
       </p>
     </footer>
   );

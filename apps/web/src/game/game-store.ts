@@ -12,7 +12,7 @@ import type { AnswerVerdict, ChoiceIndex, MatchSummary, PublicQuestion } from "@
 import type { GameSession } from "./session";
 import type { MatchRewards } from "@/lib/progress";
 
-export type GameStatus = "idle" | "intro" | "question" | "submitting" | "reveal" | "finished" | "error";
+export type GameStatus = "idle" | "intro" | "question" | "submitting" | "reveal" | "advancing" | "finished" | "error";
 
 interface GameState {
   status: GameStatus;
@@ -87,6 +87,10 @@ export const useGame = create<GameState>()((set, get) => ({
       questions: session.questions,
       livesLeft: session.livesLeft ?? null,
       maxLives: session.maxLives ?? null,
+      score: session.initial?.score ?? 0,
+      floors: session.initial?.floors ?? 0,
+      streak: session.initial?.streak ?? 0,
+      bestStreak: session.initial?.bestStreak ?? 0,
       status: "intro",
     })),
 
@@ -128,15 +132,24 @@ export const useGame = create<GameState>()((set, get) => ({
   },
 
   next: async () => {
-    const { status, session, index, questions } = get();
+    const { status, session, index } = get();
     if (status !== "reveal" || !session) return;
-    if (index + 1 < questions.length) {
-      set({ index: index + 1 });
-      get().beginQuestion();
-      return;
+    set({ status: "advancing" });
+    try {
+      if (session.prepareNext && session.hasMore !== false && index + 1 >= get().questions.length) {
+        await session.prepareNext();
+        set({ questions: session.questions });
+      }
+      if (index + 1 < get().questions.length) {
+        set({ index: index + 1 });
+        get().beginQuestion();
+        return;
+      }
+      const summary = await session.finish();
+      set({ status: "finished", summary });
+    } catch (e) {
+      set({ status: "error", error: e instanceof Error ? e.message : "Something went wrong" });
     }
-    const summary = await session.finish();
-    set({ status: "finished", summary });
   },
 
   reset: () => set((s) => ({ ...initial, matchSeq: s.matchSeq })),

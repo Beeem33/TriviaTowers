@@ -43,6 +43,16 @@ export interface GameSession {
   /** Lives remaining, for modes that have them (Endless). */
   readonly livesLeft?: number;
   readonly maxLives?: number;
+  /** Total questions when known up front but delivered one at a time (online daily). */
+  readonly expectedTotal?: number;
+  /** Position of `questions[0]` in the full set (non-zero when resuming online). */
+  readonly indexOffset?: number;
+  /** Score/tower state carried over when resuming. */
+  readonly initial?: { score: number; floors: number; streak: number; bestStreak: number };
+  /** False once the server says no further questions will come. */
+  readonly hasMore?: boolean;
+  /** Fetches the next question; called only when the player moves on, so the server clock starts then. */
+  prepareNext?(): Promise<void>;
   /** `choice` null = timed out. `elapsedMs` is advisory for local play; servers measure their own. */
   submit(questionId: string, choice: ChoiceIndex | null, elapsedMs: number): Promise<AnswerVerdict>;
   finish(): Promise<MatchSummary>;

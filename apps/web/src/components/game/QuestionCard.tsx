@@ -13,7 +13,7 @@ function AnswerButton({ index, text, onPick }: { index: ChoiceIndex; text: strin
   const status = useGame((s) => s.status);
   const selected = useGame((s) => s.selected);
   const verdict = useGame((s) => s.verdict);
-  const revealing = status === "reveal" && verdict;
+  const revealing = (status === "reveal" || status === "advancing") && verdict;
   const isCorrect = revealing && verdict.correctIndex === index;
   const isWrongPick = revealing && selected === index && !verdict.correct;
   const isPending = status === "submitting" && selected === index;
@@ -50,7 +50,7 @@ function AnswerButton({ index, text, onPick }: { index: ChoiceIndex; text: strin
   );
 }
 
-function NextButton({ ms, onNext, last }: { ms: number; onNext: () => void; last: boolean }) {
+function NextButton({ ms, onNext, last, busy }: { ms: number; onNext: () => void; last: boolean; busy: boolean }) {
   const autoAdvance = useSettings((s) => s.autoAdvance);
   const [armed, setArmed] = useState(false);
   useEffect(() => {
@@ -58,7 +58,7 @@ function NextButton({ ms, onNext, last }: { ms: number; onNext: () => void; last
     return () => cancelAnimationFrame(id);
   }, []);
   return (
-    <button type="button" onClick={onNext} className="btn btn-grape relative w-full overflow-hidden" autoFocus>
+    <button type="button" onClick={onNext} disabled={busy} className="btn btn-grape relative w-full overflow-hidden" autoFocus>
       {autoAdvance && (
         <span
           aria-hidden
@@ -66,7 +66,7 @@ function NextButton({ ms, onNext, last }: { ms: number; onNext: () => void; last
           style={{ width: armed ? "100%" : "0%", transition: `width ${ms}ms linear` }}
         />
       )}
-      <span className="relative">{last ? "See my tower" : "Next question"} →</span>
+      <span className="relative">{busy ? "Loading…" : last ? "See my tower →" : "Next question →"}</span>
     </button>
   );
 }
@@ -75,7 +75,10 @@ export function QuestionCard({ onPick, onNext }: { onPick: (i: ChoiceIndex) => v
   const status = useGame((s) => s.status);
   const question = useGame((s) => s.questions[s.index]);
   const index = useGame((s) => s.index);
-  const total = useGame((s) => s.questions.length);
+  const total = useGame((s) => s.session?.expectedTotal ?? s.questions.length);
+  const offset = useGame((s) => s.session?.indexOffset ?? 0);
+  const loaded = useGame((s) => s.questions.length);
+  const expected = useGame((s) => s.session?.expectedTotal);
   const deadline = useGame((s) => s.deadline);
   const verdict = useGame((s) => s.verdict);
   const livesLeft = useGame((s) => s.livesLeft);
@@ -85,7 +88,10 @@ export function QuestionCard({ onPick, onNext }: { onPick: (i: ChoiceIndex) => v
   if (!question || !hasSession) return null;
   const meta = CATEGORY_META[question.category];
   const shortAnswers = question.choices.every((c) => c.length <= 16);
-  const revealing = status === "reveal" && verdict;
+  const revealing = (status === "reveal" || status === "advancing") && verdict;
+  const position = offset + index;
+  // Fixed-length sets know their size; Endless knows it's over when no next question was drawn.
+  const isLast = expected !== undefined ? position + 1 >= expected : index + 1 >= loaded;
 
   return (
     <section key={question.id} className="card tt-rise space-y-3 p-4 sm:p-5" aria-labelledby="question-prompt">
@@ -97,7 +103,7 @@ export function QuestionCard({ onPick, onNext }: { onPick: (i: ChoiceIndex) => v
       </div>
 
       <h2 id="question-prompt" className="font-display text-xl font-semibold leading-snug text-balance sm:text-2xl">
-        <span className="sr-only">Question {index + 1} of {total}: </span>
+        <span className="sr-only">Question {position + 1} of {total}: </span>
         {question.prompt}
       </h2>
 
@@ -143,7 +149,8 @@ export function QuestionCard({ onPick, onNext }: { onPick: (i: ChoiceIndex) => v
             key={question.id}
             ms={verdict.correct ? REVEAL_MS.correct : REVEAL_MS.wrong}
             onNext={onNext}
-            last={index + 1 >= total}
+            last={isLast}
+            busy={status === "advancing"}
           />
         </div>
       )}

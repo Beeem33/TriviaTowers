@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/ui/ComingSoon";
+import { Header, Footer } from "@/components/ui/Header";
+import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
 
 export const metadata: Metadata = { title: "Leaderboards" };
 
 export default function LeaderboardsPage() {
   return (
-    <ComingSoon
-      emoji="🏆"
-      title="Leaderboards"
-      phase="Phase 2–5"
-      intro="Ranked leaderboards need server-verified scores, so they launch together with online daily challenges and accounts. Your local best towers are on the homepage until then."
-      items={["Daily global ranking", "Weekly seasons", "Friends leaderboard", "Lifetime records"]}
-    />
+    <div className="sky-bg min-h-dvh">
+      <Header />
+      <main className="mx-auto w-full max-w-3xl px-4 py-4 sm:px-6">
+        <LeaderboardView />
+      </main>
+      <Footer />
+    </div>
   );
 }

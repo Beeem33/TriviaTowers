@@ -38,7 +38,7 @@ export function RecentTowers() {
           Lifetime: {p.lifetime.games} games · {p.lifetime.answered} questions · {Math.round((p.lifetime.correct / Math.max(1, p.lifetime.answered)) * 100)}% accuracy · tallest {p.lifetime.highestTower} floors
         </p>
       )}
-      <p className="text-xs text-ink-soft">Global and friends leaderboards arrive with accounts (coming soon).</p>
+      <p className="text-xs text-ink-soft">Stored on this device. Friends leaderboards are coming soon.</p>
     </div>
   );
 }

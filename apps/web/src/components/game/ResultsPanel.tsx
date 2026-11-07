@@ -54,7 +54,11 @@ export function ResultsPanel({ summary, streak, onPlayAgain }: { summary: MatchS
       <div className="flex flex-wrap items-center gap-2">
         <span className="chip bg-grape text-white">{modeLabel}</span>
         {isRecord && <span className="chip tt-pop bg-sun text-white">🏆 New personal best!</span>}
-        <span className="chip bg-slate-100 text-ink-soft" title="Ranked play arrives with accounts">Unranked · saved on this device</span>
+        {summary.online ? (
+          <span className="chip bg-emerald-100 text-emerald-800">✓ Online · verified by the server</span>
+        ) : (
+          <span className="chip bg-slate-100 text-ink-soft">Offline · saved on this device</span>
+        )}
       </div>
       <div>
         <h2 id="results-title" className="font-display text-3xl font-bold">{title}</h2>
@@ -77,7 +81,12 @@ export function ResultsPanel({ summary, streak, onPlayAgain }: { summary: MatchS
         <StatTile label="Tower" value={`${summary.floors} ${summary.floors === 1 ? "floor" : "floors"}`} />
         <StatTile label="Best streak" value={summary.bestStreak} />
         <StatTile label="Answer time" value={`${(summary.totalAnswerMs / 1000).toFixed(1)}s`} />
-        {isDaily && <StatTile label="Daily rank" value="—" hint="Coming with accounts" />}
+        {isDaily &&
+          (summary.rank ? (
+            <StatTile label="Daily rank" value={`#${summary.rank.toLocaleString("en-US")}`} hint={summary.players ? `of ${summary.players.toLocaleString("en-US")} so far` : undefined} />
+          ) : (
+            <StatTile label="Daily rank" value="—" hint="Offline run" />
+          ))}
         {isEndless && <StatTile label="Your best" value={`${best?.floors ?? summary.floors} floors`} hint={isRecord ? "That's this run!" : undefined} />}
         {!isDaily && !isEndless && (
           <StatTile label="Avg. answer" value={`${(summary.totalAnswerMs / 1000 / Math.max(1, summary.total)).toFixed(1)}s`} />

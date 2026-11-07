@@ -41,11 +41,12 @@ export function Hud() {
   const floors = useGame((s) => s.floors);
   const streak = useGame((s) => s.streak);
   const index = useGame((s) => s.index);
-  const total = useGame((s) => s.questions.length);
+  const total = useGame((s) => s.session?.expectedTotal ?? s.questions.length);
+  const offset = useGame((s) => s.session?.indexOffset ?? 0);
   const livesLeft = useGame((s) => s.livesLeft);
   const maxLives = useGame((s) => s.maxLives);
   const shownScore = useCountUp(score);
-  const qNum = Math.min(total, index + 1);
+  const qNum = Math.min(total, offset + index + 1);
 
   return (
     <div className="pointer-events-none flex items-center justify-center gap-1 sm:gap-2">

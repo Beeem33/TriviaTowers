@@ -5,6 +5,8 @@ import type { ChoiceIndex, MatchSummary } from "@triviatowers/shared-types";
 import { utcDateKey } from "@triviatowers/game-core";
 import { useGame } from "@/game/game-store";
 import { EndlessGameSession, LocalGameSession } from "@/game/session";
+import { OnlineDailySession, fetchMyDailyResult } from "@/game/online-daily";
+import { ONLINE_ENABLED } from "@/lib/supabase";
 import { useSettings } from "@/game/settings-store";
 import { useReducedMotion } from "@/game/useReducedMotion";
 import { dailyStreak, loadProgress, recordMatch, todaysResult } from "@/lib/progress";
@@ -24,15 +26,27 @@ import { ResultsPanel } from "./ResultsPanel";
 import { ChallengeBanner } from "./ChallengeBanner";
 
 type Mode = "daily" | "quick" | "endless";
-type Gate = { kind: "played"; result: MatchSummary } | { kind: "ready" };
+type Gate = { kind: "checking" } | { kind: "played"; result: MatchSummary } | { kind: "ready" };
+interface Entry {
+  gate: Gate;
+  practice: boolean;
+  /** Daily played against the server (ranked, server-validated). */
+  online: boolean;
+  notice: string | null;
+}
+
+const OFFLINE_NOTICE = "Couldn’t reach the TriviaTowers server, so you’re playing offline. This run won’t appear on the leaderboard.";
 
 const INTRO_MS = 1500;
 
 /** Decides, on first render, whether today's tower was already built on this device. */
-function initialEntry(mode: Mode, replay: boolean): { gate: Gate; practice: boolean } {
+function initialEntry(mode: Mode, replay: boolean, allowOnline = true): Entry {
+  if (mode === "daily" && !replay && allowOnline && ONLINE_ENABLED) {
+    return { gate: { kind: "checking" }, practice: false, online: true, notice: null };
+  }
   const today = todaysResult(loadProgress());
-  if (mode === "daily" && today && !replay) return { gate: { kind: "played", result: today }, practice: false };
-  return { gate: { kind: "ready" }, practice: mode === "daily" && !!today };
+  if (mode === "daily" && today && !replay) return { gate: { kind: "played", result: today }, practice: false, online: false, notice: null };
+  return { gate: { kind: "ready" }, practice: mode === "daily" && !!today, online: false, notice: null };
 }
 
 /** Client-only (see PlayClient): reads localStorage during the first render. */
@@ -56,21 +70,72 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
 
   const [entry, setEntry] = useState(() => initialEntry(mode, replay));
   const [askLeave, setAskLeave] = useState(false);
-  const { gate, practice } = entry;
+  const { gate, practice, online, notice } = entry;
   const recorded = useRef<MatchSummary | null>(null);
   const introTimer = useRef<number | undefined>(undefined);
+  /** Invalidates in-flight online starts when the screen changes or unmounts. */
+  const runToken = useRef(0);
   const claim = useMemo(() => decodeChallenge(challenge), [challenge]);
 
-  /** Starts a fresh match. Touches only the external game store and timers. */
-  const beginMatch = useCallback(() => {
+  const startLocal = useCallback(() => {
     const playerId = loadProgress().playerId;
     const s = mode === "endless" ? new EndlessGameSession({ playerId }) : new LocalGameSession(mode, { playerId });
-    recorded.current = null;
-    window.clearTimeout(introTimer.current);
     useGame.getState().load(s);
-    playSound("start");
     introTimer.current = window.setTimeout(() => useGame.getState().beginQuestion(), reduced ? 300 : INTRO_MS);
   }, [mode, reduced]);
+
+  /** Starts a fresh match. Touches only the external game store, timers and (async) server. */
+  const beginMatch = useCallback(() => {
+    recorded.current = null;
+    window.clearTimeout(introTimer.current);
+    playSound("start");
+    const run = ++runToken.current;
+    if (!online) {
+      startLocal();
+      return;
+    }
+    // Online: play the intro first, then ask the server for question 1 — its clock starts
+    // when the question is served, so the intro must not eat into the player's time.
+    useGame.getState().reset();
+    introTimer.current = window.setTimeout(async () => {
+      try {
+        const r = await OnlineDailySession.start(useSettings.getState().displayName);
+        if (run !== runToken.current) return;
+        if (r.kind === "finished") {
+          setEntry((e) => ({ ...e, gate: { kind: "played", result: r.summary } }));
+          return;
+        }
+        useGame.getState().load(r.session);
+        useGame.getState().beginQuestion();
+      } catch {
+        if (run !== runToken.current) return;
+        setEntry((e) => ({ ...e, online: false, notice: OFFLINE_NOTICE }));
+        startLocal();
+      }
+    }, reduced ? 300 : INTRO_MS);
+  }, [online, reduced, startLocal]);
+
+  // Online daily: ask the server whether today's tower is already built.
+  useEffect(() => {
+    if (gate.kind !== "checking") return;
+    let cancelled = false;
+    fetchMyDailyResult().then(
+      (result) => {
+        if (cancelled) return;
+        setEntry(
+          result
+            ? { gate: { kind: "played", result }, practice: false, online: true, notice: null }
+            : { gate: { kind: "ready" }, practice: false, online: true, notice: null },
+        );
+      },
+      () => {
+        if (!cancelled) setEntry({ ...initialEntry(mode, false, false), notice: OFFLINE_NOTICE });
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [gate.kind, mode]);
 
   const onGateReady = useEffectEvent(() => beginMatch());
   useEffect(() => {
@@ -79,6 +144,7 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
   useEffect(
     () => () => {
       window.clearTimeout(introTimer.current);
+      runToken.current++;
       useGame.getState().reset();
     },
     [],
@@ -157,6 +223,7 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
   const playedFloors = gate.kind === "played" ? gate.result.floors : floors;
   const sceneMode: SceneMode =
     gate.kind === "played" || status === "finished" ? "results" : status === "intro" || status === "idle" ? "intro" : "game";
+  const gettingReady = gate.kind === "ready" && (status === "intro" || status === "idle");
   const towerSeed = session?.towerSeed ?? 1;
   const inProgress = status === "question" || status === "reveal" || status === "submitting";
 
@@ -199,7 +266,7 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
               </div>
             </div>
           )}
-          {gate.kind === "ready" && status !== "finished" && <Hud />}
+          {gate.kind === "ready" && status !== "finished" && status !== "idle" && <Hud />}
           <div className="pointer-events-auto flex gap-2">
             <SoundToggle />
             <SettingsButton className="hidden sm:inline-flex" />
@@ -210,7 +277,7 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
             +{verdict.points}
           </div>
         )}
-        {status === "intro" && (
+        {gettingReady && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <p className="tt-pop rounded-3xl bg-white/90 px-6 py-3 font-display text-2xl font-bold shadow-lg sm:text-3xl">
               {mode === "daily" ? `Daily Tower${session?.dailyNumber ? ` #${session.dailyNumber}` : ""}` : mode === "endless" ? "Endless Tower · 3 lives" : "Quick Build"} — get ready!
@@ -222,14 +289,28 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
       {/* Question / results panel */}
       <aside className="relative z-10 max-h-[66dvh] w-full shrink-0 overflow-y-auto px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1 lg:flex lg:max-h-none lg:w-[480px] lg:flex-col lg:justify-center lg:p-6">
         <div className="mx-auto w-full max-w-xl space-y-3">
+          {notice && status !== "finished" && (
+            <p role="status" className="rounded-2xl bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900 shadow">
+              {notice}
+            </p>
+          )}
           {claim && gate.kind !== "played" && status !== "finished" && <ChallengeBanner claim={claim} />}
           {mode === "daily" && practice && status !== "finished" && gate.kind === "ready" && (
             <p className="chip mx-auto flex w-fit bg-white/80 text-ink-soft">Practice replay — your saved result won’t change</p>
           )}
           {gate.kind === "played" && (
-            <AlreadyPlayed result={gate.result} streak={streak} onReplay={() => setEntry({ gate: { kind: "ready" }, practice: true })} />
+            <AlreadyPlayed
+              result={gate.result}
+              streak={streak}
+              onReplay={online ? undefined : () => setEntry({ gate: { kind: "ready" }, practice: true, online: false, notice: null })}
+            />
           )}
-          {gate.kind === "ready" && (status === "question" || status === "submitting" || status === "reveal") && (
+          {gate.kind === "checking" && (
+            <p className="card p-4 text-center font-display text-lg font-bold" role="status">
+              Checking today’s tower…
+            </p>
+          )}
+          {gate.kind === "ready" && (status === "question" || status === "submitting" || status === "reveal" || status === "advancing") && (
             <QuestionCard onPick={onPick} onNext={onNext} />
           )}
           {gate.kind === "ready" && status === "finished" && summary && (
@@ -249,7 +330,7 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
   );
 }
 
-function AlreadyPlayed({ result, streak, onReplay }: { result: MatchSummary; streak: number; onReplay: () => void }) {
+function AlreadyPlayed({ result, streak, onReplay }: { result: MatchSummary; streak: number; onReplay?: () => void }) {
   return (
     <div className="space-y-3">
       <div className="card p-4 text-center">
@@ -257,9 +338,11 @@ function AlreadyPlayed({ result, streak, onReplay }: { result: MatchSummary; str
         <p className="text-sm text-ink-soft">One official attempt per day. Here’s how you did — share it and come back tomorrow.</p>
       </div>
       <ResultsPanel summary={result} streak={streak} onPlayAgain={() => {}} />
-      <button type="button" className="btn btn-ghost w-full !text-base" onClick={onReplay}>
-        Practice replay (won’t change your result)
-      </button>
+      {onReplay && (
+        <button type="button" className="btn btn-ghost w-full !text-base" onClick={onReplay}>
+          Practice replay (won’t change your result)
+        </button>
+      )}
     </div>
   );
 }

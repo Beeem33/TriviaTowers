@@ -1,10 +1,38 @@
 # Supabase
 
-Empty until Phase 2. Planned contents (see `docs/ARCHITECTURE.md`):
+Project ref: `bicckuevfsfvmmfpgdrg` (us-east-1). The web app talks to it with the public
+publishable key; everything sensitive is enforced in the database (RLS + SECURITY DEFINER functions).
 
-- `migrations/` — versioned SQL: tables, indexes, RLS policies, RPCs, publication-lock triggers
-- `functions/` — Edge Functions (Deno): `daily-start`, `daily-answer`, `room-create`, `room-join`,
-  `match-answer`, `match-advance`, `stripe-checkout`, `stripe-webhook`
-- `seed/` — reviewed questions exported from `packages/game-core` sample bank
+## Contents
+- `migrations/` — versioned SQL. `20261107000001_daily_challenges.sql` = Phase 2 (online Daily Tower).
+- `seed/questions.sql` — generated from `packages/game-core` (never edit by hand).
+- `scripts/` — tooling that uses the Supabase Management API (no Supabase CLI needed).
 
-Edge Functions import scoring from `packages/game-core` so the browser and server use the same rules.
+## Commands
+All need a personal access token: `export SUPABASE_ACCESS_TOKEN=sbp_...` (create one at
+https://supabase.com/dashboard/account/tokens). Behind an HTTP proxy, also `export NODE_USE_ENV_PROXY=1`.
+
+```bash
+node supabase/scripts/migrate.mjs --status              # list applied / pending migrations
+node supabase/scripts/migrate.mjs                       # apply pending migrations
+npx tsx supabase/scripts/export-questions.mts           # regenerate seed/questions.sql from the bank
+node supabase/scripts/run-sql.mjs supabase/seed/questions.sql   # upsert questions
+npx tsx supabase/scripts/check-scoring.mts              # DB scoring == game-core scoring
+node supabase/scripts/smoke-daily.mjs                   # live end-to-end + security checks (cleans up)
+```
+
+Migrations are recorded in `supabase_migrations.schema_migrations`, the table the official
+Supabase CLI uses, so you can switch to `supabase db push` later.
+
+## Public API (RPC)
+| Function | Who | What |
+| --- | --- | --- |
+| `daily_play(p_name)` | signed-in (guests included) | Start/resume today's attempt; serves the current question (no answer key) |
+| `daily_answer(p_attempt, p_index, p_choice)` | signed-in | Lock an answer; server times it, scores it, returns the verdict |
+| `daily_my_result(p_date)` | signed-in | Your finished result for a day |
+| `daily_leaderboard(p_date, p_limit, p_offset)` | anyone | Ranked finished attempts (no user ids) |
+
+## Settings (`public.app_settings`)
+- `daily_allow_unreviewed` (`true`): allow `pending_review` questions in dailies until the review
+  backlog is cleared. Set to `false` once enough questions are `approved`.
+- `daily_epoch` (`2026-11-01`): date of Daily Tower #1.

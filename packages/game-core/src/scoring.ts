@@ -33,7 +33,10 @@ export function scoreAnswer(input: ScoreInput, rules: GameRules = DEFAULT_RULES)
   }
   const window = Math.max(1, rules.questionTimeMs - rules.speedGraceMs);
   const late = Math.max(0, elapsed - rules.speedGraceMs);
-  const speedBonus = Math.max(0, Math.round(rules.maxSpeedBonus * (1 - late / window)));
+  // round-half-up(maxSpeedBonus × remaining / window) in pure integer maths, so the SQL
+  // implementation (supabase/migrations, tt_score) produces bit-identical results.
+  const remaining = Math.max(0, window - late);
+  const speedBonus = Math.floor((2 * rules.maxSpeedBonus * remaining + window) / (2 * window));
   const streakBefore = Math.max(0, Math.floor(input.streakBefore));
   const streakBonus = Math.min(rules.maxStreakBonus, streakBefore * rules.streakStep);
   const basePoints = rules.basePoints;

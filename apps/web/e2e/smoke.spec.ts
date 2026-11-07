@@ -10,6 +10,12 @@ async function answerAll(page: Page) {
   }
 }
 
+// These tests run the game offline (server requests blocked) so they never touch the live
+// leaderboard. The online flow is covered by supabase/scripts/smoke-daily.mjs.
+test.beforeEach(async ({ page }) => {
+  await page.route(/supabase\.co/, (route) => route.abort());
+});
+
 test("homepage shows the daily challenge and primary actions", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("link", { name: "TriviaTowers.io home" })).toBeVisible();

@@ -47,6 +47,8 @@ const js = await build({
   define: {
     "process.env.NODE_ENV": '"production"',
     "process.env.NEXT_PUBLIC_SITE_URL": '"https://triviatowers.io"',
+    // Preview frames block requests to other sites, so the preview always plays offline.
+    "process.env.NEXT_PUBLIC_ONLINE": '"false"',
   },
   logLevel: "warning",
 });

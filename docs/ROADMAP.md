@@ -23,15 +23,23 @@ Each phase ends with a working, testable app.
 - Responsive desktop/mobile, WebGL fallback, reduced motion, screen-reader announcements
 - 38 unit tests, 16 Playwright e2e tests (desktop + mobile)
 
-## Phase 2 — Online daily challenges
-Supabase project + migrations; question tables + admin review status; daily scheduling with
-publish lock; anonymous guest auth; `daily-start` / `daily-answer` Edge Functions using `game-core`;
-`SupabaseDailySession`; ranked attempt enforcement; daily leaderboard (paginated); verified challenge
-links; question archive pages; privacy policy.
+## ✅ Phase 2 — Online daily challenges (core done)
+- Supabase project, versioned migrations, 256 questions seeded with review status
+- Daily set auto-drafted on first request (4 easy / 4 medium / 2 hard, ≤2 per category, no repeats
+  within 7 days) and locked once played
+- Guests play instantly via anonymous sign-in (no forms); one attempt per player per day
+- Server serves one question at a time without the answer key, times answers, scores with rules
+  identical to game-core (3,488-case parity check), handles refresh/resume and abandoned questions
+- Per-player answer order; RLS blocks reading answers or writing scores (21-check live smoke test)
+- Leaderboard page (any day, paginated), homepage top-5, rank on results and share text
+- Falls back to offline play if the server is unreachable
+- Still to do: admin review/scheduling UI, verified challenge links (opaque attempt ids),
+  question archive pages after each day ends.
 
-## Phase 3 — Accounts & progression
-Google + email sign-in, guest → account upgrade (keeps progress), profiles, username rules,
-server-side streaks, XP/levels, achievements, match history, import of local guest progress.
+## Phase 3 — Optional accounts & progression
+Never required to play. Optional Google/email sign-in to keep progress across devices (needs a
+custom SMTP provider for email on Supabase's free plan); guest → account upgrade keeps the same
+user id; move XP/achievements/streaks to the server; match history.
 
 ## Phase 4 — Friend Battles
 Rooms with short codes, lobby (ready/host controls), Realtime presence + server channel, synchronized

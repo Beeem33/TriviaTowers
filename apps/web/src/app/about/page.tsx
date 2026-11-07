@@ -22,13 +22,13 @@ export default function AboutPage() {
       </ul>
       <h2>Fair play</h2>
       <p>
-        Rewards are cosmetic: skins, island themes, titles and badges. Nothing can be bought that helps you answer or score. When online leaderboards
-        launch, answers and timing will be checked on our servers.
+        Rewards are cosmetic: skins, island themes, titles and badges. Nothing can be bought that helps you answer or score. In the online Daily
+        Tower, every answer and its timing is checked on our servers, and you never need an account to play.
       </p>
       <h2>Where it’s headed</h2>
       <p>
-        TriviaTowers is in early preview. Coming next: online daily leaderboards, accounts so progress follows you between devices, friends, and live
-        Friend Battles for up to eight players.
+        TriviaTowers is in early preview. Coming next: optional accounts so progress follows you between devices, friends, and live Friend Battles
+        for up to eight players.
       </p>
       <p>
         New here? Read <Link href="/how-to-play">How to Play</Link> or jump straight into <Link href="/play?mode=daily">today’s tower</Link>.

@@ -2,6 +2,7 @@ import { Header, Footer } from "@/components/ui/Header";
 import { HeroScene } from "@/components/home/HeroScene";
 import { DailyCard } from "@/components/home/DailyCard";
 import { RecentTowers } from "@/components/home/RecentTowers";
+import { TopBuilders } from "@/components/home/TopBuilders";
 
 const STEPS = [
   { emoji: "❓", title: "Answer", text: "10 trivia questions, 15 seconds each." },
@@ -44,7 +45,10 @@ export default function HomePage() {
               ))}
             </ol>
           </div>
-          <RecentTowers />
+          <div className="space-y-6">
+            <TopBuilders />
+            <RecentTowers />
+          </div>
         </section>
       </main>
       <Footer />

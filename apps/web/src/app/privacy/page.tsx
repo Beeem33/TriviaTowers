@@ -13,8 +13,21 @@ export default function PrivacyPage() {
 
       <h2>The short version</h2>
       <p>
-        Right now TriviaTowers collects no personal information on servers. Your progress and settings are stored in your own browser and never sent
-        to us. There are no accounts, no ads, no analytics and no tracking cookies.
+        You can play without giving us your name, email or any other personal details. When you play the online Daily Tower, the game creates an
+        anonymous guest ID for your browser so the server can check your answers and put your score on the leaderboard. There are no ads, no
+        analytics and no tracking cookies.
+      </p>
+
+      <h2>What the server stores (online Daily Tower)</h2>
+      <ul>
+        <li>An anonymous guest ID and a session token kept in your browser. It is not linked to your email or real name.</li>
+        <li>Your builder name, which appears on the public daily leaderboard. Choose any name you like in Settings; don’t use your real full name if you’d rather not.</li>
+        <li>For each Daily Tower you play: the answers you chose, how long each took, your score, and when you played.</li>
+        <li>Standard security logs kept by our database provider, Supabase (such as IP address and request times), used to keep the service running and prevent abuse.</li>
+      </ul>
+      <p>
+        This data is used only to run the game: scoring, enforcing one attempt per day, and showing leaderboards. It is stored with Supabase in the
+        United States. We don’t sell it or share it with advertisers.
       </p>
 
       <h2>What is stored on your device</h2>
@@ -24,7 +37,10 @@ export default function PrivacyPage() {
         <li>Your settings: builder name, sound and music volume, motion and graphics preferences, and equipped skin and island.</li>
         <li>A random identifier used to vary your tower’s design. It is not linked to who you are.</li>
       </ul>
-      <p>This data stays in your browser. To delete it, clear this site’s data in your browser settings.</p>
+      <p>
+        This data stays in your browser. To delete it, clear this site’s data in your browser settings. Clearing it also removes your guest ID, so
+        the server can no longer connect past results to you.
+      </p>
 
       <h2>What we receive</h2>
       <p>
@@ -41,8 +57,8 @@ export default function PrivacyPage() {
       <h2>Planned changes</h2>
       <p>Before any of the following launch, this policy will be updated to explain exactly what is collected and why:</p>
       <ul>
-        <li><b>Accounts</b> (optional): to save progress across devices and appear on leaderboards.</li>
-        <li><b>Online leaderboards and multiplayer</b>: your username, scores and match results.</li>
+        <li><b>Accounts</b> (optional, never required to play): to save progress across devices.</li>
+        <li><b>Friends and multiplayer</b>: friend lists and match results.</li>
         <li><b>Advertising</b> (Google AdSense), with a consent choice where the law requires one.</li>
         <li><b>Purchases</b> of cosmetic items, processed by Stripe. We will never see your full card details.</li>
         <li><b>Privacy-friendly analytics</b> to understand how the game is used.</li>

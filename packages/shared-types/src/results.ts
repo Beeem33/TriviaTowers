@@ -17,5 +17,9 @@ export interface MatchSummary {
   /** Per-question outcome, in order: true = correct. Used for spoiler-free share grids. */
   outcomes: boolean[];
   rank?: number;
+  /** Number of finished players on the same daily (online only). */
+  players?: number;
+  /** True when the result was validated and stored by the server. */
+  online?: boolean;
   finishedAt: string;
 }
