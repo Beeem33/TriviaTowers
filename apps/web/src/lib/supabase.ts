@@ -6,8 +6,11 @@
  */
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://bicckuevfsfvmmfpgdrg.supabase.co";
-const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_zs3tIKKqVoH_6zjynrz9eg_iVbcbRMc";
+const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const envKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+// Placeholders such as "auto" fall back to the TriviaTowers project.
+const URL = envUrl && /^https:\/\//.test(envUrl) ? envUrl : "https://bicckuevfsfvmmfpgdrg.supabase.co";
+const KEY = envKey && /^(sb_publishable_|eyJ)/.test(envKey) ? envKey : "sb_publishable_zs3tIKKqVoH_6zjynrz9eg_iVbcbRMc";
 export const ONLINE_ENABLED = process.env.NEXT_PUBLIC_ONLINE !== "false";
 
 let client: SupabaseClient | null = null;
