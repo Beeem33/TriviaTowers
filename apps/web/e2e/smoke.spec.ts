@@ -71,3 +71,30 @@ test("Endless Tower runs until three lives are lost", async ({ page }) => {
   await expect(page.getByText("Endless Tower", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Climb again" })).toBeVisible();
 });
+
+test("finishing a round earns XP, and the profile lets you equip unlocked items", async ({ page }) => {
+  await page.goto("/play?mode=quick");
+  await answerAll(page);
+  await expect(page.getByText(/^\+\d+ XP$/)).toBeVisible();
+  await expect(page.getByText(/Level \d+ · /).first()).toBeVisible();
+
+  await page.goto("/profile");
+  await expect(page.getByRole("heading", { name: "Tower skins" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Achievements" })).toBeVisible();
+  await expect(page.getByText("Reach level 10")).toBeVisible(); // Space Island is locked for a new player
+  const grassland = page.getByRole("listitem").filter({ hasText: "Grassland" });
+  await expect(grassland.getByText("Equipped")).toBeVisible();
+});
+
+test("info pages load", async ({ page }) => {
+  const pages: [string, string][] = [
+    ["/how-to-play", "How to Play"],
+    ["/about", "About TriviaTowers"],
+    ["/privacy", "Privacy Policy"],
+    ["/terms", "Terms of Use"],
+  ];
+  for (const [path, heading] of pages) {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
+  }
+});

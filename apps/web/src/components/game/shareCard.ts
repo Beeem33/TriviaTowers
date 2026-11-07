@@ -32,6 +32,9 @@ export async function renderShareCard(opts: {
   streak: number;
   towerImage: string | null;
   site: string;
+  /** Background gradient, top to bottom (the player's island sky). */
+  sky?: readonly [string, string, string, string];
+  skyInk?: string;
 }): Promise<Blob | null> {
   const { summary } = opts;
   if (typeof document === "undefined") return null;
@@ -43,10 +46,11 @@ export async function renderShareCard(opts: {
   if (!ctx) return null;
 
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#6fbcff");
-  sky.addColorStop(0.45, "#a9dcff");
-  sky.addColorStop(0.75, "#d7ecff");
-  sky.addColorStop(1, "#ffe2ef");
+  const [c0, c1, c2, c3] = opts.sky ?? ["#6fbcff", "#a9dcff", "#d7ecff", "#ffe2ef"];
+  sky.addColorStop(0, c0);
+  sky.addColorStop(0.45, c1);
+  sky.addColorStop(0.75, c2);
+  sky.addColorStop(1, c3);
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
 
@@ -72,7 +76,7 @@ export async function renderShareCard(opts: {
   ctx.fillStyle = "#ffffff";
   ctx.fillText("TriviaTowers.io", W / 2, 120);
   ctx.font = '600 40px "Fredoka Variable", system-ui, sans-serif';
-  ctx.fillStyle = "#1d2747";
+  ctx.fillStyle = opts.skyInk ?? "#1d2747";
   const subtitle =
     summary.mode === "daily" && summary.dailyNumber
       ? `Daily Tower #${summary.dailyNumber}`
@@ -136,7 +140,7 @@ export async function renderShareCard(opts: {
     ctx.stroke();
   });
 
-  ctx.fillStyle = "#1d2747";
+  ctx.fillStyle = opts.skyInk ?? "#1d2747";
   ctx.font = '600 34px "Fredoka Variable", system-ui, sans-serif';
   ctx.fillText(`Can you build higher? ${opts.site.replace(/^https?:\/\//, "")}`, W / 2, H - 14);
 

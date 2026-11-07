@@ -4,7 +4,16 @@
  * import when a guest creates an account.
  */
 import type { MatchSummary } from "@triviatowers/shared-types";
-import { computeDailyStreak, utcDateKey } from "@triviatowers/game-core";
+import {
+  computeDailyStreak,
+  levelForXp,
+  newAchievements,
+  newlyUnlocked,
+  utcDateKey,
+  xpForMatch,
+  type CosmeticItem,
+  type XpBreakdown,
+} from "@triviatowers/game-core";
 import { readJSON, writeJSON } from "./storage";
 
 const KEY = "tt.progress.v1";
@@ -18,6 +27,21 @@ export interface LocalProgress {
   lifetime: { games: number; answered: number; correct: number; score: number; highestTower: number };
   /** Best Endless Tower run (by floors, then score). `finishedAt` identifies the record run. */
   endlessBest: { floors: number; score: number; finishedAt: string } | null;
+  xp: number;
+  /** Achievement id → ISO time unlocked. */
+  achievements: Record<string, string>;
+}
+
+/** What a finished match earned, shown on the results screen. */
+export interface MatchRewards {
+  /** Identifies the match these rewards belong to. */
+  finishedAt: string;
+  xp: XpBreakdown;
+  xpAfter: number;
+  levelBefore: number;
+  levelAfter: number;
+  achievements: { id: string; name: string; icon: string; description: string }[];
+  unlocked: CosmeticItem[];
 }
 
 function newPlayerId(): string {
@@ -32,6 +56,8 @@ function empty(): LocalProgress {
     history: [],
     lifetime: { games: 0, answered: 0, correct: 0, score: 0, highestTower: 0 },
     endlessBest: null,
+    xp: 0,
+    achievements: {},
   };
 }
 
@@ -45,9 +71,15 @@ export function loadProgress(): LocalProgress {
   return { ...empty(), ...p, lifetime: { ...empty().lifetime, ...p.lifetime } };
 }
 
-/** Records a finished match. Daily results are only kept for the first completion of a day. */
-export function recordMatch(summary: MatchSummary, opts: { countsAsDaily: boolean }): LocalProgress {
+/**
+ * Records a finished match and works out its rewards (XP, level, achievements, unlocks).
+ * Daily results are only kept for the first completion of a day. Practice replays of a
+ * daily earn answer XP only (no daily bonus, no achievements), since the answers are known.
+ */
+export function recordMatch(summary: MatchSummary, opts: { countsAsDaily: boolean }): { progress: LocalProgress; rewards: MatchRewards } {
   const p = loadProgress();
+  const practice = summary.mode === "daily" && !opts.countsAsDaily;
+  const before = { level: levelForXp(p.xp), achievements: new Set(Object.keys(p.achievements)) };
   if (opts.countsAsDaily && summary.dateKey && !p.daily[summary.dateKey]) {
     p.daily[summary.dateKey] = summary;
   }
@@ -63,9 +95,45 @@ export function recordMatch(summary: MatchSummary, opts: { countsAsDaily: boolea
   p.lifetime.correct += summary.correct;
   p.lifetime.score += summary.score;
   p.lifetime.highestTower = Math.max(p.lifetime.highestTower, summary.floors);
+  const breakdown = xpForMatch(summary);
+  const xp: XpBreakdown = practice
+    ? { ...breakdown, dailyBonus: 0, perfectBonus: 0, total: breakdown.correct + breakdown.answered }
+    : breakdown;
+  p.xp += xp.total;
+
+  const earned = practice
+    ? []
+    : newAchievements(
+        {
+          summary,
+          totals: {
+            games: p.lifetime.games,
+            correct: p.lifetime.correct,
+            answered: p.lifetime.answered,
+            dailyStreak: computeDailyStreak(Object.keys(p.daily), summary.dateKey ?? utcDateKey()),
+            endlessBestFloors: p.endlessBest?.floors ?? 0,
+            dailiesCompleted: Object.keys(p.daily).length,
+          },
+        },
+        before.achievements,
+      );
+  for (const a of earned) p.achievements[a.id] = summary.finishedAt;
+
+  const after = { level: levelForXp(p.xp), achievements: new Set(Object.keys(p.achievements)) };
   writeJSON(KEY, p);
   notify();
-  return p;
+  return {
+    progress: p,
+    rewards: {
+      finishedAt: summary.finishedAt,
+      xp,
+      xpAfter: p.xp,
+      levelBefore: before.level,
+      levelAfter: after.level,
+      achievements: earned.map(({ id, name, icon, description }) => ({ id, name, icon, description })),
+      unlocked: newlyUnlocked(before, after),
+    },
+  };
 }
 
 /* ---- Subscription API so React can read progress with useSyncExternalStore ---- */

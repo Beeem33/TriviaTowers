@@ -4,7 +4,8 @@ Daily trivia where every correct answer adds a floor to your 3D tower on a float
 Answer today's 10 questions, keep your streak, challenge friends, and share how high you built.
 
 > **Status: Phase 1 — playable local prototype.** The full game loop runs in the browser with a
-> 256-question sample bank and three modes: Daily Tower, Quick Build and Endless Tower. Progress is stored on the device. Online daily challenges, accounts,
+> 256-question sample bank, three modes (Daily Tower, Quick Build, Endless Tower), XP, levels,
+> achievements, unlockable tower skins and island themes, and procedural music. Progress is stored on the device. Online daily challenges, accounts,
 > leaderboards and multiplayer come in later phases ([roadmap](docs/ROADMAP.md)).
 > Local play is **unranked by design**: the sample answer key ships in the bundle.
 
@@ -27,6 +28,7 @@ No accounts, API keys or Supabase project are needed for Phase 1.
 | `npm run typecheck` | TypeScript across all workspaces |
 | `npm run lint` | ESLint (Next.js + React Compiler rules) |
 | `npm run test:e2e` | Playwright end-to-end tests, desktop + mobile (build first) |
+| `node apps/web/preview/build.mjs out.html` | Build the whole game as one self-contained HTML file (for private preview links) |
 
 For e2e tests on a fresh machine run `npx playwright install chromium` once.
 

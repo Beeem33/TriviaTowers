@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import type { MatchSummary } from "@triviatowers/shared-types";
 import { buildShareText } from "@triviatowers/game-core";
 import { useSettings } from "@/game/settings-store";
+import { DEFAULT_ISLAND_ID, ISLAND_THEMES } from "@triviatowers/game-core";
 import { encodeChallenge } from "@/lib/challenge";
 import { siteUrl } from "@/lib/site";
 import { captureScene } from "@/components/three/capture";
@@ -32,6 +33,8 @@ export function ShareActions({
   streak: number;
 }) {
   const name = useSettings((s) => s.displayName);
+  const islandId = useSettings((s) => s.islandId);
+  const theme = ISLAND_THEMES[islandId] ?? ISLAND_THEMES[DEFAULT_ISLAND_ID]!;
   const [toast, setToast] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState<{ url: string; name: string } | null>(
@@ -67,6 +70,8 @@ export function ShareActions({
       streak,
       towerImage: captureScene(),
       site,
+      sky: theme.sky,
+      skyInk: theme.skyInk,
     });
     if (!blob) throw new Error("Could not create image");
     const fileName = summary.dailyNumber

@@ -25,8 +25,13 @@
 
 html,
 body {
-  background: #a9dcff;
+  background: var(--sky-solid, #a9dcff);
   color: var(--color-ink);
+}
+
+/* Text placed directly on the sky (follows the island theme). */
+.on-sky {
+  color: var(--sky-ink, #2c3a63);
 }
 
 body {
@@ -77,6 +82,35 @@ body {
 
 .card {
   @apply rounded-3xl bg-white/85 shadow-[0_10px_40px_-12px_rgba(29,39,71,0.35)] backdrop-blur-md;
+}
+
+/* Long-form text pages (How to Play, Privacy, Terms…). */
+.prose-tt {
+  @apply space-y-4 leading-relaxed text-ink;
+  max-width: 68ch;
+}
+.prose-tt h2 {
+  @apply pt-2 font-display text-2xl font-bold;
+  text-wrap: balance;
+}
+.prose-tt h3 {
+  @apply font-display text-lg font-bold;
+}
+.prose-tt ul {
+  @apply list-disc space-y-1.5 pl-5;
+}
+.prose-tt ol {
+  @apply list-decimal space-y-1.5 pl-5;
+}
+.prose-tt a {
+  @apply font-bold text-grape-dark underline;
+}
+.prose-tt table {
+  @apply w-full text-left text-sm;
+}
+.prose-tt th,
+.prose-tt td {
+  @apply border-b border-slate-200 py-2 pr-3;
 }
 
 .chip {

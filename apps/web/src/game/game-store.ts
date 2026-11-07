@@ -10,6 +10,7 @@
 import { create } from "zustand";
 import type { AnswerVerdict, ChoiceIndex, MatchSummary, PublicQuestion } from "@triviatowers/shared-types";
 import type { GameSession } from "./session";
+import type { MatchRewards } from "@/lib/progress";
 
 export type GameStatus = "idle" | "intro" | "question" | "submitting" | "reveal" | "finished" | "error";
 
@@ -39,6 +40,8 @@ interface GameState {
   buildTick: number;
   wobbleTick: number;
   summary: MatchSummary | null;
+  /** Set once the finished match has been recorded. */
+  rewards: MatchRewards | null;
   error: string | null;
 
   load: (session: GameSession) => void;
@@ -69,6 +72,7 @@ const initial = {
   buildTick: 0,
   wobbleTick: 0,
   summary: null,
+  rewards: null as MatchRewards | null,
   error: null,
 };
 

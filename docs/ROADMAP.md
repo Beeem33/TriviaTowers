@@ -12,11 +12,16 @@ Each phase ends with a working, testable app.
 - Daily Tower (same 10 questions for everyone per UTC day, deterministic, no repeats within 7 days), Quick Build
 - Endless Tower: 3 lives, difficulty and timer (15 s → 10 s) ramp with height, personal records
 - 256 sample questions across 10 categories (83 easy / 131 medium / 42 hard)
+- XP and levels (titles from Bricklayer to Tower Legend), 14 achievements, rewards on the results screen
+- Cosmetics unlocked by playing: 6 tower skins, 5 island themes (sky, fog and clouds follow the island); Profile page to equip them
+- Procedural background music with its own volume control; achievement and level-up sounds
+- How to Play, About, Privacy Policy (draft) and Terms of Use (draft) pages
+- Single-file preview build (`apps/web/preview`) for private test links
 - Results screen, local daily streak, local best towers, one-daily-per-device gate + practice replay
 - Sharing: spoiler-free text, native share, challenge links, 1080×1350 "Tower of the Day" image
 - Settings: builder name, volume/mute, reduced motion, graphics quality, auto-advance
 - Responsive desktop/mobile, WebGL fallback, reduced motion, screen-reader announcements
-- 31 unit tests, 12 Playwright e2e tests (desktop + mobile)
+- 38 unit tests, 16 Playwright e2e tests (desktop + mobile)
 
 ## Phase 2 — Online daily challenges
 Supabase project + migrations; question tables + admin review status; daily scheduling with
@@ -54,4 +59,5 @@ analytics, monitoring, backups, admin dashboard expansion, Endless milestones/ac
 - Leaderboards and Friend Battles pages are "under construction" placeholders.
 - Timer can't be extended (see DECISIONS #7).
 - Upstream console notice from React Three Fiber about `THREE.Clock` deprecation (harmless).
-- No privacy policy/terms pages yet (needed before analytics or ads).
+- Privacy Policy and Terms are pre-launch drafts: add contact details and have them legally reviewed before launch.
+- XP, achievements and unlocks are stored locally, so they can be edited by a determined player; they move to the server with accounts (Phase 3).

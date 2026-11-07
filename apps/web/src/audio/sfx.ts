@@ -7,12 +7,13 @@
  */
 import { useSettings } from "@/game/settings-store";
 
-export type SoundName = "correct" | "wrong" | "place" | "tick" | "start" | "victory" | "click" | "milestone";
+export type SoundName = "correct" | "wrong" | "place" | "tick" | "start" | "victory" | "click" | "milestone" | "achievement" | "levelup";
 
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 
-function getContext(): AudioContext | null {
+/** Shared AudioContext (also used by the music player). Null until the page has had a user gesture. */
+export function getContext(): AudioContext | null {
   if (typeof window === "undefined") return null;
   // Don't create a context before the page has had a user gesture (autoplay policy).
   const activation = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
@@ -32,7 +33,7 @@ export function unlockAudio(): void {
   if (c && c.state === "suspended") void c.resume();
 }
 
-function tone(c: AudioContext, out: AudioNode, opts: { freq: number; to?: number; start: number; dur: number; type?: OscillatorType; gain?: number }) {
+export function tone(c: AudioContext, out: AudioNode, opts: { freq: number; to?: number; start: number; dur: number; type?: OscillatorType; gain?: number }) {
   const osc = c.createOscillator();
   const g = c.createGain();
   osc.type = opts.type ?? "triangle";
@@ -98,6 +99,14 @@ export function playSound(name: SoundName, delayMs = 0): void {
       break;
     case "milestone":
       [784, 988, 1175, 1568].forEach((f, i) => tone(c, out, { freq: f, start: t + i * 0.06, dur: 0.2, gain: 0.14, type: "sine" }));
+      break;
+    case "achievement":
+      [988, 1319, 1568].forEach((f, i) => tone(c, out, { freq: f, start: t + i * 0.09, dur: 0.22, gain: 0.15, type: "triangle" }));
+      tone(c, out, { freq: 1976, start: t + 0.3, dur: 0.5, gain: 0.08, type: "sine" });
+      break;
+    case "levelup":
+      [523, 659, 784, 1047, 1319].forEach((f, i) => tone(c, out, { freq: f, start: t + i * 0.08, dur: 0.24, gain: 0.15 }));
+      [1047, 1319, 1568].forEach((f) => tone(c, out, { freq: f, start: t + 0.45, dur: 0.9, gain: 0.08, type: "sine" }));
       break;
     case "victory":
       [523, 659, 784, 1047].forEach((f, i) => tone(c, out, { freq: f, start: t + i * 0.12, dur: 0.28, gain: 0.18 }));

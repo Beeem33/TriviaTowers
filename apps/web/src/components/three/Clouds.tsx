@@ -6,7 +6,7 @@ import { createRng } from "@triviatowers/game-core";
 import { Merged } from "./Merged";
 import type { Part } from "./parts";
 
-function cloudRing(seed: number, count: number, radius: [number, number], y: [number, number], size: number): Part[] {
+function cloudRing(seed: number, count: number, radius: [number, number], y: [number, number], size: number, color: string): Part[] {
   const rng = createRng(seed);
   const parts: Part[] = [];
   for (let c = 0; c < count; c++) {
@@ -20,7 +20,7 @@ function cloudRing(seed: number, count: number, radius: [number, number], y: [nu
       const s = size * (0.6 + rng() * 0.6);
       parts.push({
         prim: "ico",
-        color: p % 2 ? "#ffffff" : "#f4f7ff",
+        color,
         pos: [cx + (p - puffs / 2) * size * 0.8, cy + rng() * size * 0.3, cz + (rng() - 0.5) * size],
         scale: [s * 1.2, s * 0.8, s],
       });
@@ -29,7 +29,7 @@ function cloudRing(seed: number, count: number, radius: [number, number], y: [nu
   return parts;
 }
 
-export function Clouds({ reducedMotion = false }: { reducedMotion?: boolean }) {
+export function Clouds({ reducedMotion = false, color = "#ffffff" }: { reducedMotion?: boolean; color?: string }) {
   const below = useRef<THREE.Group>(null);
   const far = useRef<THREE.Group>(null);
   useFrame((_, dt) => {
@@ -40,10 +40,10 @@ export function Clouds({ reducedMotion = false }: { reducedMotion?: boolean }) {
   return (
     <>
       <group ref={below}>
-        <Merged buildKey="clouds-below" build={() => cloudRing(3, 9, [7, 13], [-9, -6], 1.4)} castShadow={false} receiveShadow={false} />
+        <Merged buildKey={`clouds-below|${color}`} build={() => cloudRing(3, 9, [7, 13], [-9, -6], 1.4, color)} castShadow={false} receiveShadow={false} />
       </group>
       <group ref={far}>
-        <Merged buildKey="clouds-far" build={() => cloudRing(5, 10, [22, 30], [-4, 8], 2.2)} castShadow={false} receiveShadow={false} />
+        <Merged buildKey={`clouds-far|${color}`} build={() => cloudRing(5, 10, [22, 30], [-4, 8], 2.2, color)} castShadow={false} receiveShadow={false} />
       </group>
     </>
   );

@@ -63,7 +63,7 @@ const html = `<title>TriviaTowers</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito:wght@400..900&display=swap">
 <style>${css}
-html, body { background: #a9dcff; }
+html, body { background: var(--sky-solid, #a9dcff); }
 </style>
 <div id="root"></div>
 <script>${code}</script>

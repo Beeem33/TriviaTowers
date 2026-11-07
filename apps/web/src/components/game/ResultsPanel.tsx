@@ -6,6 +6,8 @@ import { useNow } from "@/lib/useNow";
 import { useLocalProgress } from "@/lib/useLocalProgress";
 import { IconCheck, IconFlame, IconX } from "@/components/ui/Icons";
 import { ShareActions } from "./ShareActions";
+import { RewardsBox } from "./RewardsBox";
+import { useGame } from "@/game/game-store";
 import { useCountUp } from "./Hud";
 
 function headline(s: MatchSummary): { title: string; sub: string } {
@@ -42,6 +44,7 @@ export function ResultsPanel({ summary, streak, onPlayAgain }: { summary: MatchS
   const isDaily = summary.mode === "daily";
   const isEndless = summary.mode === "endless";
   const progress = useLocalProgress();
+  const rewards = useGame((s) => (s.rewards?.finishedAt === summary.finishedAt ? s.rewards : null));
   const best = progress?.endlessBest ?? null;
   const isRecord = isEndless && best?.finishedAt === summary.finishedAt && summary.floors > 0;
   const modeLabel = isDaily ? `Daily Tower #${summary.dailyNumber}` : isEndless ? "Endless Tower" : "Quick Build";
@@ -96,6 +99,8 @@ export function ResultsPanel({ summary, streak, onPlayAgain }: { summary: MatchS
           </li>
         ))}
       </ol>
+
+      {rewards && <RewardsBox rewards={rewards} />}
 
       {isDaily && streak > 0 && (
         <p className="flex items-center justify-center gap-2 rounded-2xl bg-orange-50 px-3 py-2 text-sm font-bold text-sun-dark">

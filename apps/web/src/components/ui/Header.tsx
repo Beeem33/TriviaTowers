@@ -2,11 +2,20 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 import { SoundToggle } from "./SoundToggle";
 import { SettingsButton } from "./SettingsDialog";
+import { LevelBadge } from "./LevelBadge";
 
 const NAV = [
   { href: "/play?mode=daily", label: "Play" },
   { href: "/friends", label: "Friends" },
   { href: "/leaderboards", label: "Leaderboards" },
+  { href: "/profile", label: "Profile" },
+];
+
+const INFO = [
+  { href: "/how-to-play", label: "How to Play" },
+  { href: "/about", label: "About" },
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
 ];
 
 export function Header() {
@@ -21,6 +30,7 @@ export function Header() {
         ))}
       </nav>
       <div className="flex items-center gap-2">
+        <LevelBadge />
         <SoundToggle />
         <SettingsButton />
       </div>
@@ -30,10 +40,15 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-8 pt-12 text-sm text-ink-soft sm:px-6">
+    <footer className="on-sky relative z-10 mx-auto w-full max-w-6xl px-4 pb-8 pt-12 text-sm sm:px-6">
       <nav aria-label="Footer" className="mb-3 flex flex-wrap gap-x-5 gap-y-2 font-bold md:hidden">
         {NAV.map((n) => (
           <Link key={n.href} href={n.href} className="hover:text-ink">{n.label}</Link>
+        ))}
+      </nav>
+      <nav aria-label="Information" className="mb-3 flex flex-wrap gap-x-5 gap-y-2 font-bold">
+        {INFO.map((n) => (
+          <Link key={n.href} href={n.href} className="hover:underline">{n.label}</Link>
         ))}
       </nav>
       <p>

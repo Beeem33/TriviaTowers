@@ -4,6 +4,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import type * as THREE from "three";
 import { useSettings } from "@/game/settings-store";
+import { DEFAULT_ISLAND_ID, ISLAND_THEMES } from "@triviatowers/game-core";
 import { Island } from "./Island";
 import { Tower } from "./Tower";
 import { Clouds } from "./Clouds";
@@ -16,7 +17,9 @@ export interface TowerSceneProps {
   mode: SceneMode;
   floors: number;
   seed: number;
+  /** Defaults to the player's equipped skin / island. */
   skinId?: string;
+  islandId?: string;
   buildTick?: number;
   wobbleTick?: number;
   reducedMotion: boolean;
@@ -81,6 +84,10 @@ export default function TowerScene(props: TowerSceneProps) {
   const quality = useSettings((s) => s.quality);
   const autoDowngraded = useSettings((s) => s.autoDowngraded);
   const setSettings = useSettings((s) => s.set);
+  const equippedSkin = useSettings((s) => s.skinId);
+  const equippedIsland = useSettings((s) => s.islandId);
+  const theme = ISLAND_THEMES[props.islandId ?? equippedIsland] ?? ISLAND_THEMES[DEFAULT_ISLAND_ID]!;
+  const skinId = props.skinId ?? equippedSkin;
   const low = quality === "low" || (quality === "auto" && autoDowngraded);
   const shadowSize = low ? 0 : quality === "high" ? 2048 : 1024;
   const dpr: [number, number] = low ? [1, 1] : quality === "high" ? [1, 2] : [1, 1.75];
@@ -99,24 +106,24 @@ export default function TowerScene(props: TowerSceneProps) {
             if (quality === "auto" && !autoDowngraded) setSettings({ autoDowngraded: true });
           }}
         />
-        <fog attach="fog" args={["#d7ecff", 30, 75]} />
+        <fog attach="fog" args={[theme.fog, 30, 75]} />
         <hemisphereLight args={["#d6ecff", "#ffd7b5", 1.5]} />
         <SunLight mode={props.mode} floors={props.floors} shadowSize={shadowSize} />
         <CameraRig mode={props.mode} floors={props.floors} reducedMotion={props.reducedMotion} interactive={props.interactive ?? false} />
         <Bob reducedMotion={props.reducedMotion}>
-          <Island />
+          <Island theme={theme} />
           <Tower
             key={props.towerKey}
             floors={props.floors}
             seed={props.seed}
-            skinId={props.skinId}
+            skinId={skinId}
             buildTick={props.buildTick}
             wobbleTick={props.wobbleTick}
             reducedMotion={props.reducedMotion}
           />
           {!props.reducedMotion && <Particles key={low ? "low" : "high"} density={low ? 0.5 : 1} />}
         </Bob>
-        <Clouds reducedMotion={props.reducedMotion} />
+        <Clouds reducedMotion={props.reducedMotion} color={theme.cloud} />
         <CaptureBridge />
       </Canvas>
     </div>

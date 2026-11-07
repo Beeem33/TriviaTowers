@@ -87,7 +87,7 @@ export function SettingsButton({ className = "" }: { className?: string }) {
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="font-display text-sm font-semibold text-ink-soft" id="vol-label">Sound volume</span>
+              <span className="font-display text-sm font-semibold text-ink-soft" id="vol-label">Volume</span>
               <label className="flex items-center gap-2 text-sm font-bold">
                 <input type="checkbox" checked={s.muted} onChange={(e) => s.set({ muted: e.target.checked })} className="h-4 w-4 accent-grape" />
                 Mute
@@ -105,6 +105,32 @@ export function SettingsButton({ className = "" }: { className?: string }) {
               className="w-full accent-grape"
             />
           </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-display text-sm font-semibold text-ink-soft" id="music-label">Music</span>
+              <label className="flex items-center gap-2 text-sm font-bold">
+                <input type="checkbox" checked={s.music} onChange={(e) => s.set({ music: e.target.checked })} className="h-4 w-4 accent-grape" />
+                On
+              </label>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={s.musicVolume}
+              disabled={!s.music}
+              aria-labelledby="music-label"
+              onChange={(e) => s.set({ musicVolume: Number(e.target.value) })}
+              className="w-full accent-grape disabled:opacity-40"
+            />
+          </div>
+
+          <label className="flex items-center justify-between gap-3">
+            <span className="font-display text-sm font-semibold text-ink-soft">Go to the next question automatically</span>
+            <input type="checkbox" checked={s.autoAdvance} onChange={(e) => s.set({ autoAdvance: e.target.checked })} className="h-4 w-4 accent-grape" />
+          </label>
 
           <Segmented<MotionPref>
             label="Motion"

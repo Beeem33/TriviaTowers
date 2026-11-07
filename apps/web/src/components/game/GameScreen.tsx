@@ -112,8 +112,11 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
   useEffect(() => {
     if (status !== "finished" || !summary || recorded.current === summary) return;
     recorded.current = summary;
-    recordMatch(summary, { countsAsDaily: summary.mode === "daily" && !practice });
+    const { rewards } = recordMatch(summary, { countsAsDaily: summary.mode === "daily" && !practice });
+    useGame.setState({ rewards });
     playSound("victory", 300);
+    if (rewards.levelAfter > rewards.levelBefore) playSound("levelup", 1700);
+    else if (rewards.achievements.length > 0) playSound("achievement", 1700);
     if (!reduced) {
       window.setTimeout(() => fx.emit({ kind: "confetti", y: towerTopY(summary.floors) + 1, amount: 140 }), 500);
     }

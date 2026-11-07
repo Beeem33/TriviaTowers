@@ -15,6 +15,10 @@ interface SettingsState {
   autoDowngraded: boolean;
   /** Move to the next question automatically after the answer reveal. */
   autoAdvance: boolean;
+  music: boolean;
+  musicVolume: number;
+  skinId: string;
+  islandId: string;
   set: (patch: Partial<Omit<SettingsState, "set">>) => void;
 }
 
@@ -32,6 +36,10 @@ export const useSettings = create<SettingsState>()(
       displayName: defaultName(),
       autoDowngraded: false,
       autoAdvance: true,
+      music: true,
+      musicVolume: 0.5,
+      skinId: "classic",
+      islandId: "grassland",
       set: (patch) => set(patch),
     }),
     {
@@ -45,6 +53,10 @@ export const useSettings = create<SettingsState>()(
         displayName: s.displayName,
         autoDowngraded: s.autoDowngraded,
         autoAdvance: s.autoAdvance,
+        music: s.music,
+        musicVolume: s.musicVolume,
+        skinId: s.skinId,
+        islandId: s.islandId,
       }),
     },
   ),

@@ -6,5 +6,7 @@ export * from "./streak";
 export * from "./tower";
 export * from "./share";
 export * from "./endless";
+export * from "./progression";
+export * from "./cosmetics";
 export * from "./questions/select";
 export { SAMPLE_QUESTIONS } from "./questions/sample-bank";

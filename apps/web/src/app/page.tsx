@@ -23,7 +23,7 @@ export default function HomePage() {
               <h1 className="font-display text-4xl font-bold leading-[1.05] text-white [text-shadow:0_3px_0_#3f6fd8,0_10px_24px_rgba(29,39,71,0.25)] sm:text-5xl">
                 Answer trivia.<br />Build your tower.
               </h1>
-              <p className="max-w-md text-lg font-semibold text-ink/80">
+              <p className="on-sky max-w-md text-lg font-semibold">
                 A new 10-question challenge every day. How high can you build?
               </p>
             </div>
