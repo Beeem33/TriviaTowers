@@ -7,5 +7,5 @@ export function PlayFromParams() {
   const raw = sp.get("mode");
   const mode = raw === "quick" || raw === "endless" ? raw : "daily";
   const replay = sp.get("replay") === "1";
-  return <PlayClient key={`${mode}-${replay}`} mode={mode} replay={replay} challenge={sp.get("ch") ?? undefined} />;
+  return <PlayClient key={`${mode}-${replay}`} mode={mode} replay={replay} challenge={sp.get("ch") ?? undefined} challengeAttempt={sp.get("c") ?? undefined} />;
 }

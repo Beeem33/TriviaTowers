@@ -33,8 +33,12 @@ Each phase ends with a working, testable app.
 - Per-player answer order; RLS blocks reading answers or writing scores (21-check live smoke test)
 - Leaderboard page (any day, paginated), homepage top-5, rank on results and share text
 - Falls back to offline play if the server is unreachable
-- Still to do: admin review/scheduling UI, verified challenge links (opaque attempt ids),
-  question archive pages after each day ends.
+- Verified challenge links (`?c=<attempt id>`): friends see the server-checked score, then a
+  head-to-head result after they play
+- Answer review: your picks, the right answers, explanations, sources and % of players correct;
+  today's unlock after you finish, past days are a public archive
+- Export / import progress codes to move local progress between sites, browsers and devices
+- Still to do: admin review/scheduling UI.
 
 ## Phase 3 — Optional accounts & progression
 Never required to play. Optional Google/email sign-in to keep progress across devices (needs a

@@ -18,6 +18,7 @@ import { useSettings } from "@/game/settings-store";
 import { useReducedMotion } from "@/game/useReducedMotion";
 import { SceneView } from "@/components/three/SceneView";
 import { playSound } from "@/audio/sfx";
+import { ProgressTransfer } from "@/components/ui/ProgressTransfer";
 
 function unlockLabel(item: CosmeticItem): string {
   switch (item.unlock.type) {
@@ -131,7 +132,7 @@ export function ProfileView() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-      <div className="space-y-6 self-start lg:sticky lg:top-4">
+      <div className="space-y-6">
         <section className="card space-y-4 p-5 sm:p-6" aria-labelledby="builder-name">
           <div className="flex items-center gap-4">
             <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-grape font-display text-3xl font-bold text-white" aria-hidden>
@@ -169,6 +170,13 @@ export function ProfileView() {
             Saved on this device. Change your builder name in Settings. Earn XP by playing: 10 per correct answer, 2 per question, plus bonuses for
             Daily Towers and perfect rounds.
           </p>
+        </section>
+
+        <section className="card space-y-3 p-5 sm:p-6" aria-labelledby="move-title">
+          <h2 id="move-title" className="font-display text-2xl font-bold">
+            Move your progress
+          </h2>
+          <ProgressTransfer />
         </section>
 
         <section className="card overflow-hidden" aria-label="Your tower and island">

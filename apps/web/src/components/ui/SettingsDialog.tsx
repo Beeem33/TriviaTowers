@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { cleanDisplayName, useSettings, type MotionPref, type QualityPref } from "@/game/settings-store";
 import { playSound } from "@/audio/sfx";
 import { IconGear, IconX } from "./Icons";
+import { ProgressTransfer } from "./ProgressTransfer";
 
 function Segmented<T extends string>({ label, value, options, onChange }: {
   label: string;
@@ -155,6 +156,12 @@ export function SettingsButton({ className = "" }: { className?: string }) {
           {s.quality === "auto" && s.autoDowngraded && (
             <p className="text-xs text-ink-soft">Auto switched to lighter graphics to keep things smooth on this device.</p>
           )}
+          <details className="rounded-2xl bg-slate-50 p-3">
+            <summary className="cursor-pointer font-display text-sm font-semibold text-ink-soft">Move your progress to another device</summary>
+            <div className="pt-3">
+              <ProgressTransfer compact />
+            </div>
+          </details>
           <button type="button" className="btn btn-grape w-full" onClick={() => dialog.current?.close()}>Done</button>
         </div>
       </dialog>

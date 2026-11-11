@@ -104,3 +104,36 @@ test("info pages load", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
   }
 });
+
+test("progress can be moved to another browser with a code", async ({ page, browser }) => {
+  await page.goto("/play?mode=quick");
+  await answerAll(page);
+  await expect(page.getByText("Final score")).toBeVisible();
+
+  await page.goto("/profile");
+  const xpText = await page.getByText(/^[\d,]+ XP$/).first().innerText();
+  await page.getByRole("button", { name: "Copy my progress code" }).click();
+  const code = await page.getByRole("main").getByLabel("Your progress code").inputValue();
+  expect(code).toMatch(/^TT1\./);
+
+  const other = await browser.newContext();
+  const page2 = await other.newPage();
+  await page2.route(/supabase\.co/, (route) => route.abort());
+  await page2.goto("/profile");
+  await expect(page2.getByText(/^0 XP$/)).toBeVisible();
+  await page2.getByRole("main").getByLabel("Import a progress code").fill(code);
+  await page2.getByRole("button", { name: "Import progress" }).click();
+  await expect(page2.getByText(/Progress imported!/)).toBeVisible();
+  await expect(page2.getByText(xpText, { exact: true })).toBeVisible();
+
+  // Importing the same code again never double-counts.
+  await page2.getByRole("main").getByLabel("Import a progress code").fill(code);
+  await page2.getByRole("button", { name: "Import progress" }).click();
+  await expect(page2.getByText(xpText, { exact: true })).toBeVisible();
+  await expect(page2.getByText("Games").locator("..").getByText("1", { exact: true })).toBeVisible();
+
+  await page2.getByRole("main").getByLabel("Import a progress code").fill("hello");
+  await page2.getByRole("button", { name: "Import progress" }).click();
+  await expect(page2.getByText(/doesn’t look like a TriviaTowers progress code/)).toBeVisible();
+  await other.close();
+});

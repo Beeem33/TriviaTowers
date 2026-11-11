@@ -4,7 +4,8 @@ Project ref: `bicckuevfsfvmmfpgdrg` (us-east-1). The web app talks to it with th
 publishable key; everything sensitive is enforced in the database (RLS + SECURITY DEFINER functions).
 
 ## Contents
-- `migrations/` — versioned SQL. `20261107000001_daily_challenges.sql` = Phase 2 (online Daily Tower).
+- `migrations/` — versioned SQL. `20261107000001_daily_challenges.sql` = online Daily Tower;
+  `20261111000001_challenges_and_review.sql` = verified challenges and answer review.
 - `seed/questions.sql` — generated from `packages/game-core` (never edit by hand).
 - `scripts/` — tooling that uses the Supabase Management API (no Supabase CLI needed).
 
@@ -31,6 +32,8 @@ Supabase CLI uses, so you can switch to `supabase db push` later.
 | `daily_answer(p_attempt, p_index, p_choice)` | signed-in | Lock an answer; server times it, scores it, returns the verdict |
 | `daily_my_result(p_date)` | signed-in | Your finished result for a day |
 | `daily_leaderboard(p_date, p_limit, p_offset)` | anyone | Ranked finished attempts (no user ids) |
+| `daily_challenge_info(p_attempt)` | anyone | Spoiler-free summary of a finished attempt (challenge links) |
+| `daily_review(p_date)` | anyone* | Questions, answers, explanations, % correct, and your picks. *Today only after you finish; past days are public |
 
 ## Settings (`public.app_settings`)
 - `daily_allow_unreviewed` (`true`): allow `pending_review` questions in dailies until the review

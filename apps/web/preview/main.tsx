@@ -13,6 +13,7 @@ import HowToPlayPage from "@/app/how-to-play/page";
 import AboutPage from "@/app/about/page";
 import PrivacyPage from "@/app/privacy/page";
 import TermsPage from "@/app/terms/page";
+import ReviewPage from "@/app/review/page";
 import { PlayClient } from "@/components/game/PlayClient";
 import { ClientEffects } from "@/components/ui/ClientEffects";
 
@@ -46,6 +47,7 @@ function App() {
   else if (route === "about") page = <AboutPage />;
   else if (route === "privacy") page = <PrivacyPage />;
   else if (route === "terms") page = <TermsPage />;
+  else if (route === "review") page = <ReviewPage />;
   else page = <HomePage />;
 
   return (

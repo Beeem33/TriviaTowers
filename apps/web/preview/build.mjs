@@ -49,10 +49,17 @@ const js = await build({
     "process.env.NEXT_PUBLIC_SITE_URL": '"https://triviatowers.io"',
     // Preview frames block requests to other sites, so the preview always plays offline.
     "process.env.NEXT_PUBLIC_ONLINE": '"false"',
+    "process.env.NEXT_PUBLIC_SUPABASE_URL": '""',
+    "process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": '""',
+    // Anything else read from process.env is undefined in the browser.
+    "process.env": "{}",
   },
   logLevel: "warning",
 });
 let code = rename(js.outputFiles[0].text);
+if (/\bprocess\.env\b/.test(code.replace(/"[^"]*"/g, ""))) {
+  throw new Error("Bundle still references process.env; add a define for it in preview/build.mjs");
+}
 
 // Inline the logo as a data URI and keep the script safe inside <script>.
 const logo = await readFile(path.join(web, "public/logo-mark.svg"));

@@ -120,6 +120,12 @@ export function ResultsPanel({ summary, streak, onPlayAgain }: { summary: MatchS
 
       <ShareActions summary={summary} streak={isDaily ? streak : 0} />
 
+      {isDaily && summary.online && summary.dateKey && (
+        <Link href={`/review?date=${summary.dateKey}`} className="btn btn-ghost w-full !text-base">
+          Review the answers
+        </Link>
+      )}
+
       <div className="grid grid-cols-2 gap-2">
         {isDaily ? (
           <Link href="/play?mode=quick" className="btn btn-mint">Quick Build</Link>

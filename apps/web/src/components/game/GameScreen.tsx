@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { ChoiceIndex, MatchSummary } from "@triviatowers/shared-types";
-import { utcDateKey } from "@triviatowers/game-core";
+import { dailyNumber, utcDateKey } from "@triviatowers/game-core";
 import { useGame } from "@/game/game-store";
 import { EndlessGameSession, LocalGameSession } from "@/game/session";
 import { OnlineDailySession, fetchMyDailyResult } from "@/game/online-daily";
@@ -24,6 +24,7 @@ import { Hud } from "./Hud";
 import { QuestionCard, REVEAL_MS } from "./QuestionCard";
 import { ResultsPanel } from "./ResultsPanel";
 import { ChallengeBanner } from "./ChallengeBanner";
+import { ChallengeOutcome, VerifiedChallengeBanner } from "./VerifiedChallenge";
 
 type Mode = "daily" | "quick" | "endless";
 type Gate = { kind: "checking" } | { kind: "played"; result: MatchSummary } | { kind: "ready" };
@@ -50,7 +51,18 @@ function initialEntry(mode: Mode, replay: boolean, allowOnline = true): Entry {
 }
 
 /** Client-only (see PlayClient): reads localStorage during the first render. */
-export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: boolean; challenge?: string }) {
+export function GameScreen({
+  mode,
+  replay,
+  challenge,
+  challengeAttempt,
+}: {
+  mode: Mode;
+  replay: boolean;
+  challenge?: string;
+  /** Server attempt id from a verified challenge link (?c=). */
+  challengeAttempt?: string;
+}) {
   const reduced = useReducedMotion();
   const status = useGame((s) => s.status);
   const floors = useGame((s) => s.floors);
@@ -280,7 +292,7 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
         {gettingReady && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <p className="tt-pop rounded-3xl bg-white/90 px-6 py-3 font-display text-2xl font-bold shadow-lg sm:text-3xl">
-              {mode === "daily" ? `Daily Tower${session?.dailyNumber ? ` #${session.dailyNumber}` : ""}` : mode === "endless" ? "Endless Tower · 3 lives" : "Quick Build"} — get ready!
+              {mode === "daily" ? `Daily Tower #${session?.dailyNumber ?? dailyNumber(utcDateKey())}` : mode === "endless" ? "Endless Tower · 3 lives" : "Quick Build"} — get ready!
             </p>
           </div>
         )}
@@ -294,7 +306,11 @@ export function GameScreen({ mode, replay, challenge }: { mode: Mode; replay: bo
               {notice}
             </p>
           )}
-          {claim && gate.kind !== "played" && status !== "finished" && <ChallengeBanner claim={claim} />}
+          {claim && !challengeAttempt && gate.kind !== "played" && status !== "finished" && <ChallengeBanner claim={claim} />}
+          {challengeAttempt && gate.kind !== "played" && status !== "finished" && <VerifiedChallengeBanner attemptId={challengeAttempt} />}
+          {challengeAttempt && status === "finished" && summary && summary.attemptId !== challengeAttempt && (
+            <ChallengeOutcome attemptId={challengeAttempt} myScore={summary.score} />
+          )}
           {mode === "daily" && practice && status !== "finished" && gate.kind === "ready" && (
             <p className="chip mx-auto flex w-fit bg-white/80 text-ink-soft">Practice replay — your saved result won’t change</p>
           )}

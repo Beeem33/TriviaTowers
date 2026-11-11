@@ -69,6 +69,11 @@ try {
   const sameOrder = JSON.stringify(bStart.data.question.choices) === JSON.stringify(q0.choices);
   console.log(`  (answer order for the two players ${sameOrder ? "happens to match" : "differs"})`);
 
+  const early = await rpc(a.token, "daily_review", {});
+  check(early.status >= 400, "answers for today stay hidden until you finish", JSON.stringify(early.data?.message ?? ""));
+  const unfinishedInfo = await rpc(null, "daily_challenge_info", { p_attempt: start.data.attemptId });
+  check(unfinishedInfo.status === 200 && unfinishedInfo.data === null, "unfinished attempts can't be used as challenges");
+
   // Play all 10 as A (always the first shown choice).
   let verdict;
   let state = start.data;
@@ -88,6 +93,21 @@ try {
   check(replay.data.status === "finished" && replay.data.summary.score === sum.score, "a second attempt is refused (result is final)");
   const late = await rpc(a.token, "daily_answer", { p_attempt: state.attemptId, p_index: 9, p_choice: 1 });
   check(late.status >= 400, "cannot answer after finishing");
+
+  check(typeof sum.attemptId === "string", "summary includes the attempt id for challenge links");
+  const info = await rpc(null, "daily_challenge_info", { p_attempt: sum.attemptId });
+  check(info.status === 200 && info.data?.score === sum.score && info.data?.displayName === "SmokeTest A", "challenge link info is public and matches the result");
+  check(info.data && !JSON.stringify(info.data).includes("explanation") && !("questions" in info.data), "challenge info contains no answers");
+  const review = await rpc(a.token, "daily_review", {});
+  const rq = review.data?.questions ?? [];
+  check(review.status === 200 && rq.length === 10 && rq.every((q) => q.answered && typeof q.correctIndex === "number"), "finished player can review all 10 answers");
+  check(rq.filter((q) => q.yourCorrect).length === sum.correct, "review marks the same answers correct as the score");
+  const bEarly = await rpc(b.token, "daily_review", {});
+  check(bEarly.status >= 400, "a player who hasn't finished still can't see today's answers");
+  const anonToday = await rpc(null, "daily_review", {});
+  check(anonToday.status >= 400, "signed-out visitors can't see today's answers");
+  const future = await rpc(null, "daily_review", { p_date: "2099-01-01" });
+  check(future.status >= 400, "future days are not available");
 
   const board = await rpc(null, "daily_leaderboard", {});
   check(board.status === 200 && board.data.some((r) => r.display_name === "SmokeTest A" && r.score === sum.score), "leaderboard shows the finished result (readable without signing in)");

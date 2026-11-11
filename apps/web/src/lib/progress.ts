@@ -136,6 +136,12 @@ export function recordMatch(summary: MatchSummary, opts: { countsAsDaily: boolea
   };
 }
 
+/** Replaces stored progress (used by progress import) and notifies the UI. */
+export function saveProgress(p: LocalProgress): void {
+  writeJSON(KEY, p);
+  notify();
+}
+
 /* ---- Subscription API so React can read progress with useSyncExternalStore ---- */
 const EVENT = "tt-progress";
 let cachedRaw: string | null | undefined;

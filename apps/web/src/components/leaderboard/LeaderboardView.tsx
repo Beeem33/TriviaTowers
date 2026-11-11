@@ -127,6 +127,11 @@ export function LeaderboardView() {
         </div>
       )}
 
+      {date && (!isToday || me) && (
+        <Link href={`/review?date=${date}`} className="btn btn-ghost w-full !text-base">
+          See this day’s answers
+        </Link>
+      )}
       {isToday && rows && !me && rows.length > 0 && (
         <p className="rounded-2xl bg-orange-50 px-4 py-3 text-sm font-semibold">
           Haven’t played yet? <Link href="/play?mode=daily" className="font-bold text-sun-dark underline">Build today’s tower</Link> to get on the board.

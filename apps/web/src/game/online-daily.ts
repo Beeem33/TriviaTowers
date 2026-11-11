@@ -4,10 +4,11 @@
  */
 import type { AnswerVerdict, ChoiceIndex, MatchSummary, PublicQuestion } from "@triviatowers/shared-types";
 import { DEFAULT_RULES, towerSeed } from "@triviatowers/game-core";
-import { ensureGuest, withTimeout } from "@/lib/supabase";
+import { currentClient, ensureGuest, withTimeout } from "@/lib/supabase";
 import type { GameSession } from "./session";
 
 interface ServerSummary {
+  attemptId: string;
   dateKey: string;
   dailyNumber: number;
   score: number;
@@ -46,6 +47,7 @@ export function toMatchSummary(s: ServerSummary): MatchSummary {
     dailyNumber: s.dailyNumber,
     ranked: true,
     online: true,
+    attemptId: s.attemptId,
     score: s.score,
     correct: s.correct,
     total: s.total,
@@ -65,6 +67,27 @@ async function call<T>(fn: string, args: Record<string, unknown>): Promise<T> {
   const { data, error } = await withTimeout(sb.rpc(fn, args));
   if (error) throw new Error(error.message);
   return data as T;
+}
+
+export interface VerifiedChallenge {
+  displayName: string;
+  score: number;
+  correct: number;
+  floors: number;
+  total: number;
+  dailyNumber: number;
+  dateKey: string;
+  outcomes: boolean[];
+}
+
+/** Public, spoiler-free info about a friend's finished daily (for challenge links). */
+export async function fetchChallenge(attemptId: string): Promise<VerifiedChallenge | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(attemptId)) return null;
+  const sb = await currentClient();
+  if (!sb) return null;
+  const { data, error } = await withTimeout(sb.rpc("daily_challenge_info", { p_attempt: attemptId }));
+  if (error) throw new Error(error.message);
+  return (data as VerifiedChallenge | null) ?? null;
 }
 
 /** Today's finished result for this player, or null (does not start an attempt). */

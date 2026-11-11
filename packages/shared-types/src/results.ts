@@ -21,5 +21,7 @@ export interface MatchSummary {
   players?: number;
   /** True when the result was validated and stored by the server. */
   online?: boolean;
+  /** Server attempt id (online daily) — shareable as a verified challenge link. */
+  attemptId?: string;
   finishedAt: string;
 }

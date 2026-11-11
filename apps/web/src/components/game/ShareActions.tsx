@@ -47,16 +47,21 @@ export function ShareActions({
   };
 
   const site = siteUrl();
-  const challengeUrl = `${site}/play?mode=${summary.mode === "battle" ? "quick" : summary.mode}&ch=${encodeChallenge(
-    {
-      name,
-      score: summary.score,
-      floors: summary.floors,
-      correct: summary.correct,
-      total: summary.total,
-      daily: summary.dailyNumber,
-    },
-  )}`;
+  // Online dailies share the server attempt id: the friend sees the verified result.
+  // Offline runs fall back to a self-reported claim.
+  const challengeUrl =
+    summary.online && summary.attemptId
+      ? `${site}/play?mode=daily&c=${summary.attemptId}`
+      : `${site}/play?mode=${summary.mode === "battle" ? "quick" : summary.mode}&ch=${encodeChallenge(
+          {
+            name,
+            score: summary.score,
+            floors: summary.floors,
+            correct: summary.correct,
+            total: summary.total,
+            daily: summary.dailyNumber,
+          },
+        )}`;
   const text = buildShareText(summary, {
     dailyStreak: streak,
     siteUrl: site,
